@@ -17,7 +17,6 @@ import time
 
 import numpy as np
 import torch
-from common import RESULTS, checkpoint, hardware, write_json
 
 from adversarial_robustness_lab.attacks import FGSM, PGD, AutoAttackEnsemble, build_attacks
 from adversarial_robustness_lab.data import load_cifar10
@@ -25,6 +24,7 @@ from adversarial_robustness_lab.evaluation import check_threat_model, evaluate_a
 from adversarial_robustness_lab.models import count_parameters
 from adversarial_robustness_lab.runtime import limit_memory, load_checkpoint, pick_device
 from adversarial_robustness_lab.stats import wilson_interval
+from common import RESULTS, checkpoint, hardware, write_json
 
 EPS = 8 / 255
 

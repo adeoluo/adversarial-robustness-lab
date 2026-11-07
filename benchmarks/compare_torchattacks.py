@@ -19,7 +19,6 @@ from collections.abc import Callable
 
 import torch
 import torchattacks
-from common import RESULTS, checkpoint, hardware, write_json
 from torch import nn
 
 from adversarial_robustness_lab.attacks import (
@@ -36,6 +35,7 @@ from adversarial_robustness_lab.data import load_cifar10
 from adversarial_robustness_lab.evaluation import evaluate_attack
 from adversarial_robustness_lab.runtime import limit_memory, load_checkpoint, pick_device
 from adversarial_robustness_lab.stats import wilson_interval
+from common import RESULTS, checkpoint, hardware, write_json
 
 EPS = 8 / 255
 L2_EPS = 0.5
@@ -166,7 +166,8 @@ def main(argv: list[str] | None = None) -> int:
             }
             outcomes[side] = res.robust_correct
             print(
-                f"[{time.strftime('%H:%M:%S')}] {label:<26} {side:<13} {res.robust_accuracy:.4f} {res.seconds:7.1f}s",
+                f"[{time.strftime('%H:%M:%S')}] {label:<26} {side:<13} "
+                f"{res.robust_accuracy:.4f} {res.seconds:7.1f}s",
                 flush=True,
             )
         a, b = outcomes["ours"], outcomes["torchattacks"]
