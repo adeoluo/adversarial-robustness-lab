@@ -1,31 +1,35 @@
 [project]
 name = "adversarial-robustness-lab"
 version = "0.1.0"
-description = "One-line description."
+description = "Evasion attacks, adversarial training and randomized smoothing certification for CIFAR-10 classifiers"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [{ name = "Adeolu Ogunnoiki" }]
 dependencies = [
-    "pydantic>=2.0",
-    "pydantic-settings>=2.0",
-    "structlog>=24.0",
-]
-
-[project.optional-dependencies]
-# install with: uv sync --extra ml
-ml = [
     "numpy>=1.26",
     "torch>=2.2",
 ]
 
 [dependency-groups]
+# Opt-in reference comparisons: torchattacks for attack parity and strength,
+# SciPy and statsmodels for the Clopper-Pearson and beta-function parity tests.
+validation = [
+    "torchattacks>=3.5",
+    "scipy>=1.11",
+    "statsmodels>=0.14",
+]
 dev = [
     "ruff>=0.8",
     "mypy>=1.14",
     "pytest>=8.0",
     "pytest-cov>=5.0",
+    "hypothesis>=6.100",
+    "pre-commit>=3.7",
 ]
+
+[project.scripts]
+adversarial-robustness-lab = "adversarial_robustness_lab.cli:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -34,17 +38,28 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/adversarial_robustness_lab"]
 
+# CPU wheels of torch on Linux (CI and Docker); macOS wheels come from PyPI and include MPS.
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+torchvision = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
 # ---------------------------------------------------------------------------
 # Tooling
 # ---------------------------------------------------------------------------
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-src = ["src", "tests"]
+src = ["src", "tests", "benchmarks"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "SIM", "C4", "RUF"]
-ignore = []
+# N812/N806: torch.nn.functional as F and math-style capital names (X, Y, N) are conventional here.
+ignore = ["N812", "N806", "N803"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["adversarial_robustness_lab"]
@@ -54,11 +69,21 @@ python_version = "3.11"
 strict = true
 warn_unused_configs = true
 disallow_untyped_defs = true
-plugins = ["pydantic.mypy"]
+# torch modules subclass nn.Module, which mypy sees as Any in some torch builds.
+disallow_subclassing_any = false
+disallow_untyped_calls = false
+
+[[tool.mypy.overrides]]
+module = ["torchattacks.*", "scipy.*", "statsmodels.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 addopts = "-ra -q"
 testpaths = ["tests"]
+markers = [
+    "validation: needs the validation group (torchattacks, SciPy, statsmodels)",
+    "slow: longer integration tests",
+]
 
 [tool.coverage.run]
 source = ["src"]
