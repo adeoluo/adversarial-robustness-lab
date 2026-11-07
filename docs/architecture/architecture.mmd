@@ -1,38 +1,47 @@
----
-title: System Architecture - Adversarial Robustness Lab
-config:
-  theme: base
-  themeVariables:
-    fontFamily: "Inter, system-ui, sans-serif"
-    primaryColor: "#F8FAFC"
-    primaryBorderColor: "#1E293B"
-    primaryTextColor: "#1E293B"
-    lineColor: "#64748B"
-    clusterBkg: "#E2E8F0"
-    clusterBorder: "#94A3B8"
----
 flowchart LR
+    classDef edge     fill:#F59E0B,stroke:#1E293B,color:#1E293B,stroke-width:1px;
     classDef core     fill:#6366F1,stroke:#1E293B,color:#ffffff,stroke-width:1px;
     classDef data     fill:#10B981,stroke:#1E293B,color:#ffffff,stroke-width:1px;
-    classDef external fill:#F59E0B,stroke:#1E293B,color:#1E293B,stroke-width:1px;
-    classDef danger   fill:#EF4444,stroke:#1E293B,color:#ffffff,stroke-width:1px;
+    classDef control  fill:#0EA5E9,stroke:#1E293B,color:#ffffff,stroke-width:1px;
+    classDef obs      fill:#CBD5E1,stroke:#1E293B,color:#1E293B,stroke-width:1px;
 
-    User([User]):::external
-
-    subgraph Application["Application Service"]
-        API[API Layer]:::core
-        Core[Core Engine]:::core
-        Evaluation[Evaluation Harness]:::core
+    subgraph Interfaces["Interfaces"]
+        direction TB
+        Users([Researchers, CI jobs]):::edge
+        CLI["CLI<br/>train, attack, certify"]:::edge
+        Service["HTTP service<br/>/v1/attack /v1/certify"]:::core
+        Validate["Request limits<br/>shape, budget, steps"]:::control
+        Users --> CLI ~~~ Service --> Validate
     end
 
-    Cache[(Semantic Cache)]:::data
-    Store[(Datastore / Index)]:::data
-    LLM{{LLM Provider}}:::external
+    subgraph State["Data and models"]
+        direction TB
+        Cifar[("CIFAR-10<br/>50k train, 10k test")]:::data
+        Trainer["Training<br/>PGD-AT, TRADES, noise"]:::core
+        Zoo[("Checkpoints<br/>WRN-16-2, ResNet-18")]:::data
+        Cifar --> Trainer --> Zoo
+    end
 
-    User -->|request| API
-    API --> Core
-    Core -->|lookup| Cache
-    Core -->|retrieve| Store
-    Core -->|completion| LLM
-    Core -.->|traces/metrics| Evaluation
-    Core -->|response| User
+    subgraph Core["Attacks and certification"]
+        direction TB
+        Geometry["Threat model<br/>Linf, L2 projections"]:::control
+        Gradient["Gradient attacks<br/>FGSM, PGD, C&W, APGD"]:::core
+        Square["Square attack<br/>score based"]:::core
+        Ensemble["Ensemble<br/>worst case per image"]:::core
+        Smooth["Randomized smoothing<br/>Clopper-Pearson"]:::core
+        Geometry --> Gradient --> Ensemble
+        Square --> Ensemble ~~~ Smooth
+    end
+
+    subgraph Obs["Evaluation and outputs"]
+        direction TB
+        Verify["Threat check<br/>every batch"]:::control
+        Sanity["Masking checks<br/>BPDA control"]:::obs
+        Reports["Robust accuracy<br/>certified radius"]:::obs
+        Metrics["Metrics<br/>Prometheus text"]:::obs
+        Verify --> Reports ~~~ Sanity ~~~ Metrics
+    end
+
+    Interfaces -->|images, budgets| Core
+    State -.->|weights, test set| Core
+    Core -->|adversarial examples| Obs
