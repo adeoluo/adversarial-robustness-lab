@@ -21,4 +21,5 @@ USER application
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
     CMD python -c "import adversarial_robustness_lab" || exit 1
-CMD ["python", "-m", "adversarial_robustness_lab"]
+# Mount a checkpoint at /models/model.pt (see the README), then:
+CMD ["python", "-m", "adversarial_robustness_lab", "serve", "--checkpoint", "/models/model.pt", "--host", "0.0.0.0", "--device", "cpu"]
