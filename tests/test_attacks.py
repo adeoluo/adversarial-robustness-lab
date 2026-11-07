@@ -199,7 +199,7 @@ def test_square_needs_no_gradients(
 def test_square_stops_on_fooled_samples(
     trained_cnn: nn.Module, batch: tuple[torch.Tensor, torch.Tensor]
 ) -> None:
-    x, y = batch
+    x, _ = batch
     wrong = (predict(trained_cnn, x) + 1) % 10
     attack = SquareAttack(EPS, n_queries=50)
     attack(trained_cnn, x, wrong)

@@ -1,11 +1,11 @@
-.PHONY: help setup lint format type test coverage evaluation run diagram docker-build docker-up clean all
+.PHONY: help setup lint format type test coverage validation data train train-all evaluation certify sanity compare report run diagram docker-build docker-up clean all changelog cut-release
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
 	  awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
 
-setup: ## Install dependencies and pre-commit hooks
-	uv sync --all-extras --dev
+setup: ## Install dependencies (with the validation group) and pre-commit hooks
+	uv sync --dev --group validation
 	uv run pre-commit install
 
 format: ## Format automatically
@@ -25,21 +25,45 @@ test: ## Run tests
 coverage: ## Tests with coverage gate
 	uv run pytest --cov=src --cov-report=term-missing --cov-fail-under=80
 
-evaluation: ## Reproduce the results table
-	uv run python -m adversarial_robustness_lab.evaluation
+validation: ## Parity tests against torchattacks, SciPy and statsmodels
+	uv run pytest -m validation -v
 
-run: ## Run the application entrypoint
-	uv run python -m adversarial_robustness_lab
+data: ## Download and verify CIFAR-10 (163 MiB, outside the repository)
+	uv run python -m adversarial_robustness_lab data
 
-diagram: ## Render architecture diagram to SVG
-	mmdc -i docs/architecture/architecture.mmd \
+train: ## Train one zoo model: make train NAME=wrn16_2_pgd
+	uv run python benchmarks/train_zoo.py $(NAME) --resume
+
+train-all: ## Train the whole zoo, one run at a time
+	scripts/train_queue.sh small_cnn_standard wrn16_2_standard wrn16_2_pgd wrn16_2_fgsm_rs wrn16_2_trades wrn16_2_noise025 wrn16_2_noise050 rn18_standard
+
+evaluation: ## Robust accuracy of every model on the full test set
+	uv run python benchmarks/robustness.py
+
+compare: ## Our attacks against torchattacks on the same models
+	uv run python benchmarks/compare_torchattacks.py
+
+certify: ## Randomized smoothing certification
+	uv run python benchmarks/certify.py
+
+sanity: ## Gradient-masking sanity checks
+	uv run python benchmarks/sanity.py
+
+report: ## Print the README tables from benchmarks/results
+	uv run python benchmarks/report.py
+
+run: ## Run the HTTP service (CHECKPOINT=path)
+	uv run python -m adversarial_robustness_lab serve --checkpoint $(CHECKPOINT)
+
+diagram: ## Render the architecture diagram to SVG
+	npx -y @mermaid-js/mermaid-cli -i docs/architecture/architecture.mmd \
 	     -o docs/architecture/architecture.svg \
 	     -c mermaid.config.json -b transparent
 
 docker-build: ## Build the image
 	docker build -t adversarial-robustness-lab .
 
-docker-up: ## Run via docker compose
+docker-up: ## Run via docker compose (ARL_CHECKPOINT=path)
 	docker compose up --build
 
 clean: ## Remove caches and artifacts

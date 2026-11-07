@@ -10,7 +10,8 @@ strongest single attack.
 then Square with 5,000 queries: AutoAttack's standard version without FAB-T, which is
 not implemented here (the comparison with torchattacks' AutoAttack, which includes it,
 measures what that omission costs). ``fast`` is APGD-CE then untargeted APGD-DLR, the
-pair the original paper first proposed. Square exists only for L-infinity, so L2 ensembles stop after APGD-T.
+pair the original paper first proposed. Square exists only for L-infinity, so L2
+ensembles stop after APGD-T.
 """
 
 from __future__ import annotations

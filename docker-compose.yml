@@ -1,9 +1,10 @@
 services:
   application:
     build: .
-    env_file: .env
     ports:
       - "8000:8000"
+    volumes:
+      - ${ARL_CHECKPOINT:-./checkpoints/model.pt}:/models/model.pt:ro
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import adversarial_robustness_lab"]
