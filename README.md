@@ -204,7 +204,23 @@ suitable for any real decision.
 
 ## Limitations
 
-LIMITATIONS_PLACEHOLDER
+- **Small models, short schedules.** Every robust model is a 0.69 M parameter
+  WideResNet-16-2 trained for 10 epochs, sized for an 8 GB M1. Published PGD-AT and
+  TRADES models (WideResNet-34-10, 100+ epochs) are far more robust; their numbers are
+  cited, not rerun.
+- **One training seed per model.** Intervals cover test-set sampling, not training
+  variance; small gaps between training methods may not be significant.
+- **Robust accuracy is an upper bound.** The ensemble has APGD-CE, APGD-T and Square but
+  not FAB-T; a stronger or adaptive attack could lower the numbers. The sanity checks
+  catch common gradient masking, not every failure of the evaluation.
+- **Certification at reduced scale.** 500 test images with n = 10,000 samples instead of
+  10,000 images with n = 100,000, which caps the certifiable radius (see the sampling
+  budget table in the evaluation report).
+- **L-infinity first.** The ensemble and adversarial training are evaluated at
+  L-infinity 8/255 on the full test set; L2 attacks are compared with torchattacks but
+  there is no L2-trained model.
+- **No compiled core.** The cost is the network's forward and backward passes, so the
+  attacks are batched PyTorch ([ADR-0006](docs/adr/0006-pytorch-without-compiled-core.md)).
 
 ## Roadmap
 
