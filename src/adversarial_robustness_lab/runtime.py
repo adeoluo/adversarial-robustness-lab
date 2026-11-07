@@ -16,7 +16,9 @@ from adversarial_robustness_lab.models import build_model
 
 
 def pick_device(name: str = "auto") -> torch.device:
-    """``auto`` prefers CUDA, then Apple MPS, then CPU."""
+    """``auto`` uses ``$ARL_DEVICE`` if set, else prefers CUDA, then Apple MPS, then CPU."""
+    if name == "auto":
+        name = os.environ.get("ARL_DEVICE", "auto")
     if name != "auto":
         return torch.device(name)
     if torch.cuda.is_available():  # pragma: no cover - no CUDA on the test machines

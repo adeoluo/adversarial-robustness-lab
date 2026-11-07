@@ -33,6 +33,7 @@ def check_threat_model(
     x: torch.Tensor, x_adv: torch.Tensor, eps: float, norm: Norm, tol: float = TOLERANCE
 ) -> None:
     """Raise unless every ``x_adv`` is in ``[0, 1]`` and within ``eps`` of ``x``."""
+    x_adv = x_adv.detach()
     if x_adv.shape != x.shape:
         raise ThreatModelError(f"shape changed from {tuple(x.shape)} to {tuple(x_adv.shape)}")
     if not bool(torch.isfinite(x_adv).all()):
