@@ -7,7 +7,9 @@ the same test images; lower robust accuracy means a stronger attack. Cheap attac
 (FGSM, PGD, PGD-L2) use ``--n-cheap`` images, the costly ones (C&W, APGD, Square)
 ``--n-costly`` and the AutoAttack pair ``--n-autoattack``. torchattacks' AutoAttack
 includes FAB-T, which this package does not implement. ``--only`` runs a subset of the
-pairs and merges them into the existing results file.
+pairs and merges them into the existing results file. Each side of each pair is a
+resumable part: after ``--max-minutes`` the script exits with status 3 and a rerun
+continues.
 Results: ``benchmarks/results/compare/<name>.json``.
 """
 
@@ -19,6 +21,7 @@ import sys
 import time
 from collections.abc import Callable
 
+import numpy as np
 import torch
 import torchattacks
 from torch import nn
@@ -37,7 +40,7 @@ from adversarial_robustness_lab.data import load_cifar10
 from adversarial_robustness_lab.evaluation import evaluate_attack
 from adversarial_robustness_lab.runtime import limit_memory, load_checkpoint, pick_device
 from adversarial_robustness_lab.stats import wilson_interval
-from common import RESULTS, checkpoint, hardware, write_json
+from common import INCOMPLETE, RESULTS, Parts, checkpoint, hardware, write_json
 
 EPS = 8 / 255
 L2_EPS = 0.5
@@ -75,7 +78,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--only", nargs="*", default=None)
     parser.add_argument("--batch-size", type=int, default=250)
     parser.add_argument("--memory-fraction", type=float, default=0.36)
+    parser.add_argument("--max-minutes", type=float, default=35.0)
     args = parser.parse_args(argv)
+    config = {k: getattr(args, k) for k in ("n_cheap", "n_costly", "n_autoattack")}
+    parts = Parts(f"compare_{args.name}", config, args.max_minutes)
     device = pick_device()
     limit_memory(device, args.memory_fraction)
     model, meta = load_checkpoint(checkpoint(args.name), device)
@@ -159,18 +165,32 @@ def main(argv: list[str] | None = None) -> int:
         row: dict[str, object] = {"attack": label, "norm": norm, "eps": eps, "n": n}
         outcomes = {}
         for side, fn in (("ours", ours), ("torchattacks", ref)):
-            res = evaluate_attack(m, fn, x, y, eps, norm, args.batch_size, name=label)  # type: ignore[arg-type]
-            k = int(res.robust_correct.sum())
-            row[side] = {
-                "robust_accuracy": res.robust_accuracy,
-                "ci95": list(wilson_interval(k, n)),
-                "seconds": res.seconds,
-                "clean_accuracy": res.clean_accuracy,
-            }
-            outcomes[side] = res.robust_correct
+            key = f"{label}/{side}"
+            if key not in parts:
+                if parts.out_of_time():
+                    print("time budget reached; rerun to continue", flush=True)
+                    return INCOMPLETE
+                res = evaluate_attack(m, fn, x, y, eps, norm, args.batch_size, name=label)  # type: ignore[arg-type]
+                k = int(res.robust_correct.sum())
+                parts.save(
+                    key,
+                    {
+                        "summary": {
+                            "robust_accuracy": res.robust_accuracy,
+                            "ci95": list(wilson_interval(k, n)),
+                            "seconds": res.seconds,
+                            "clean_accuracy": res.clean_accuracy,
+                        },
+                        "robust": res.robust_correct.astype(int).tolist(),
+                    },
+                )
+            row[side] = parts[key]["summary"]
+            outcomes[side] = np.asarray(parts[key]["robust"], dtype=bool)
+            summary = row[side]
+            assert isinstance(summary, dict)
             print(
                 f"[{time.strftime('%H:%M:%S')}] {label:<26} {side:<13} "
-                f"{res.robust_accuracy:.4f} {res.seconds:7.1f}s",
+                f"{summary['robust_accuracy']:.4f} {summary['seconds']:7.1f}s",
                 flush=True,
             )
         a, b = outcomes["ours"], outcomes["torchattacks"]
