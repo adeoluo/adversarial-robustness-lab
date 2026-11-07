@@ -1,27 +1,59 @@
-# Model / System Card - Adversarial Robustness Lab
+# Model card: the CIFAR-10 model zoo
 
 ## Overview
-- **What it is:** 1 - 2 sentences.
-- **Base model(s):** e.g., Claude 3.5 Sonnet / GPT-4o / Llama-3-8B / from-scratch.
-- **Version & date:**
+
+Eight image classifiers trained from scratch in this repository on the 50,000 CIFAR-10
+training images, to be attacked, defended and certified by the code here. They are
+evaluation subjects, not products.
+
+| Name | Architecture | Parameters | Training | Epochs | Training time (M1, MPS) |
+|---|---|---:|---|---:|---:|
+| `small_cnn_standard` | four-convolution CNN | 591,274 | standard | 20 | 8.5 min |
+| `wrn16_2_standard` | WideResNet-16-2 | 691,674 | standard | 10 | 17.7 min |
+| `wrn16_2_fgsm_rs` | WideResNet-16-2 | 691,674 | FGSM with random start (Wong et al., 2020), eps 8/255 | 10 | 19.8 min |
+| `wrn16_2_pgd` | WideResNet-16-2 | 691,674 | PGD-AT (Madry et al., 2018), eps 8/255, 5 steps of 2/255 | 10 | 49.3 min |
+| `wrn16_2_trades` | WideResNet-16-2 | 691,674 | TRADES (Zhang et al., 2019), beta 6, 5 steps | 10 | 84.1 min |
+| `wrn16_2_noise025` | WideResNet-16-2 | 691,674 | Gaussian noise, sigma 0.25 (base model for smoothing) | 10 | 17.0 min |
+| `wrn16_2_noise050` | WideResNet-16-2 | 691,674 | Gaussian noise, sigma 0.50 (base model for smoothing) | 10 | 24.8 min |
+| `rn18_standard` | PreAct ResNet-18 | 11,172,170 | standard | 10 | see `benchmarks/results/train/` |
+
+All use SGD with Nesterov momentum 0.9, weight decay 5e-4, batch size 128, a one-cycle
+learning rate schedule, random crop and horizontal flip, seed 0. Inputs are pixels in
+[0, 1]; per-channel standardization is the first layer of each network. Configurations
+and per-epoch histories: `benchmarks/train_zoo.py`, `benchmarks/results/train/*.json`.
+Checkpoints are written to `../.bench-data/adversarial-robustness-lab/runs/` and are
+not committed; `make train-all` recreates them.
 
 ## Intended use
-- **Primary use cases:**
-- **Primary users:**
 
-## Out-of-scope / prohibited use
-- Where this should **not** be used, and why.
+- Subjects for measuring attacks, adversarial training and certification on CIFAR-10.
+- Reproducing the tables in the README and [EVALUATION_REPORT.md](EVALUATION_REPORT.md).
+
+## Out of scope
+
+- Any real classification task, and any claim about robustness outside CIFAR-10 at the
+  stated budgets.
+- Comparisons with published robust models as equals: published PGD-AT and TRADES
+  results use 100 to 200 epochs on WideResNet-34-10 (46M parameters); these models use
+  10 epochs on 0.7M parameters, so their clean and robust accuracies are lower.
 
 ## Performance
-- Summary of key metrics (link to [`EVALUATION_REPORT.md`](EVALUATION_REPORT.md)).
-- Known performance disparities across inputs / subgroups.
 
-## Risks & limitations
-- Failure modes, biases, hallucination behavior, brittleness.
-- **Dual-use / misuse considerations.**
+Clean and robust accuracy on the full 10,000-image test set, with 95% Wilson intervals,
+are in the README and [EVALUATION_REPORT.md](EVALUATION_REPORT.md); certified accuracy
+of the smoothed noise models is in the same places.
 
-## Safety mitigations
-- Guardrails, filtering, human-in-the-loop, abstention behavior.
+## Risks and limitations
 
-## Environmental / cost footprint
-- Compute used; approximate cost / energy where relevant.
+- Short schedules: the adversarially trained models are under-trained compared with
+  the literature, and their robustness is lower than published numbers for the same
+  method.
+- The models inherit CIFAR-10's biases (10 everyday object classes, 32 x 32 images).
+- Robust accuracy is an upper bound measured by the attacks implemented here; a
+  stronger attack could lower it. The sanity checks are designed to catch the common
+  ways this bound is loose (gradient masking), not to prove it is tight.
+
+## Footprint
+
+Training the whole zoo took about 4.5 hours on an Apple M1 (8 GB) with the MPS backend,
+shared with other work; evaluation times are recorded in each results file.
