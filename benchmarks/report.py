@@ -77,7 +77,7 @@ def ensemble_breakdown() -> None:
         if res is None or not res.get("ensemble"):
             continue
         ens, n = res["ensemble"], res["n"]
-        after, sec = ens["robust_after"], ens["seconds"]
+        after, sec = ens["robust_after"], ens["stage_seconds"]
         print(
             f"| {arch} {method} | {after['clean'] / n:.2%} | {after['apgd-ce'] / n:.2%} | "
             f"{after['apgd-t'] / n:.2%} | {after['square'] / n:.2%} | "
