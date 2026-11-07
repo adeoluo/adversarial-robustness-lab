@@ -17,7 +17,9 @@
   selection on test data.
 - **Evaluation:** all 10,000 test images for clean and robust accuracy. Costly
   comparisons use the first 1,000 test images and certification every 20th test image
-  (500 images, as in Cohen et al.); the subsets are fixed and stated with each table.
+  (500 images; Cohen et al. certified the full CIFAR-10 test set with 100,000 samples
+  per image, 200 times this sampling budget). The subsets are fixed and stated with
+  each table.
 - **Tests and CI:** a synthetic, CIFAR-shaped stand-in (`synthetic_split`), so CI needs
   no download.
 

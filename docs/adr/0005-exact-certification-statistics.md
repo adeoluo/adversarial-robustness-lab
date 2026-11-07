@@ -32,4 +32,5 @@ model whose gradients are masked looks robust to gradient attacks.
 ## Consequences
 - Certificates hold with probability at least 1 - alpha per image, as in the paper.
 - The maximum certifiable radius is bounded by the sample count: with n = 10,000 and
-  alpha = 0.001 it is sigma times Phi^-1(0.001^(1/10000)), about 3.4 sigma.
+  alpha = 0.001 it is sigma times Phi^-1(0.001^(1/10000)), about 3.20 sigma (3.81 sigma
+  with the paper's n = 100,000).

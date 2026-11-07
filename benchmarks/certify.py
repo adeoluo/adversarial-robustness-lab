@@ -2,7 +2,8 @@
 
     uv run python benchmarks/certify.py wrn16_2_noise025 [--skip 20] [--n 10000]
 
-Certifies every ``--skip``-th test image (Cohen et al. used every 20th, 500 images) with
+Certifies every ``--skip``-th test image (default every 20th, 500 images; Cohen et al.
+certified all 10,000 with n = 100,000, beyond this machine's budget) with
 ``n0 = 100`` selection samples and up to ``--n`` estimation samples at ``alpha = 0.001``.
 Estimation counts are recorded at nested sample sizes (100, 1,000, 10,000), so one run
 also gives the certified accuracy as a function of the Monte Carlo budget. Results:
