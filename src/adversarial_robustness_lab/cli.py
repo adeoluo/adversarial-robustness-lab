@@ -254,7 +254,10 @@ def cmd_attack(args: argparse.Namespace) -> int:
         }
         rows.append(row)
         if not args.json:
-            mark = "FOOLED" if row["fooled"] else "held"
+            if row["clean"] != row["label"]:
+                mark = "wrong already"
+            else:
+                mark = "FOOLED" if row["fooled"] else "held"
             print(
                 f"#{row['index']:<5} {row['label']:>10} | clean {row['clean']:>10} "
                 f"{row['clean_confidence']:.2f} | {args.attack} {row['adversarial']:>10} "
@@ -262,8 +265,12 @@ def cmd_attack(args: argparse.Namespace) -> int:
                 f"L2 {row['l2']:.3f} | {mark}"
             )
     if not args.json:
-        fooled = sum(r["fooled"] for r in rows)
-        print(f"{fooled}/{len(rows)} fooled by {args.attack} at eps {args.eps:.4f}")
+        correct = [r for r in rows if r["clean"] == r["label"]]
+        fooled = sum(r["fooled"] for r in correct)
+        print(
+            f"{fooled}/{len(correct)} correctly classified images fooled by {args.attack} "
+            f"at eps {args.eps * 255:.1f}/255 ({len(rows) - len(correct)} wrong already)"
+        )
     _emit(rows, args.json, args.out)
     return 0
 
