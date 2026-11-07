@@ -226,8 +226,8 @@ def main(argv: list[str] | None = None) -> int:
             "targets": args.targets,
             "square_queries": args.queries,
             "robust_after": robust_after,
-            "seconds": ens_seconds,
             **summarize("ensemble", survivors, sum(ens_seconds.values())),
+            "stage_seconds": ens_seconds,
         }
         log(f"ensemble: {survivors.mean():.4f}")
     write_json(RESULTS / "robustness" / f"{args.name}.json", payload)

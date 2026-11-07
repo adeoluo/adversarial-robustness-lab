@@ -69,13 +69,18 @@
       "apgd-t": 0,
       "square": 0
     },
-    "seconds": 1793.5291413309992,
     "attack": "ensemble",
     "robust_accuracy": 0.0,
     "ci95": [
       0.0,
       0.00038399837067659546
     ],
-    "n": 10000
+    "n": 10000,
+    "seconds": 1793.5291413309992,
+    "stage_seconds": {
+      "apgd-ce": 1793.5291413309992,
+      "apgd-t": 0.0,
+      "square": 0.0
+    }
   }
 }
