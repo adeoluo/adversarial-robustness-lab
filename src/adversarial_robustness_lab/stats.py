@@ -148,7 +148,9 @@ def wilson_interval(k: int, n: int, confidence: float = 0.95) -> tuple[float, fl
     denom = 1 + z * z / n
     centre = (phat + z * z / (2 * n)) / denom
     half = z * math.sqrt(phat * (1 - phat) / n + z * z / (4 * n * n)) / denom
-    return max(0.0, centre - half), min(1.0, centre + half)
+    lower = 0.0 if k == 0 else max(0.0, centre - half)
+    upper = 1.0 if k == n else min(1.0, centre + half)
+    return lower, upper
 
 
 def bootstrap_ci(
