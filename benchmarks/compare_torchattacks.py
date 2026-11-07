@@ -4,9 +4,11 @@
 
 Each pair runs the same attack with the same budget and settings in both libraries on
 the same test images; lower robust accuracy means a stronger attack. Cheap attacks
-(FGSM, PGD, PGD-L2) use ``--n-cheap`` images, the costly ones (C&W, APGD, Square, the
-AutoAttack ensembles) ``--n-costly``. torchattacks' AutoAttack includes FAB-T, which this
-package does not implement. Results: ``benchmarks/results/compare/<name>.json``.
+(FGSM, PGD, PGD-L2) use ``--n-cheap`` images, the costly ones (C&W, APGD, Square)
+``--n-costly`` and the AutoAttack pair ``--n-autoattack``. torchattacks' AutoAttack
+includes FAB-T, which this package does not implement. ``--only`` runs a subset of the
+pairs and merges them into the existing results file.
+Results: ``benchmarks/results/compare/<name>.json``.
 """
 
 from __future__ import annotations
@@ -69,6 +71,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("name")
     parser.add_argument("--n-cheap", type=int, default=10_000)
     parser.add_argument("--n-costly", type=int, default=1000)
+    parser.add_argument("--n-autoattack", type=int, default=500)
     parser.add_argument("--only", nargs="*", default=None)
     parser.add_argument("--batch-size", type=int, default=250)
     parser.add_argument("--memory-fraction", type=float, default=0.36)
@@ -138,7 +141,7 @@ def main(argv: list[str] | None = None) -> int:
             "AutoAttack standard",
             "linf",
             EPS,
-            args.n_costly,
+            args.n_autoattack,
             ensemble_fn(EPS, 9, 5000),
             ta(
                 torchattacks.AutoAttack(
