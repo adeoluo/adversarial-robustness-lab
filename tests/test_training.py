@@ -93,6 +93,22 @@ def test_resume_continues_from_checkpoint(
     assert logs[0].startswith("resumed")
 
 
+def test_stop_after_splits_a_run_into_resumable_steps(
+    train_split: ImageSplit, test_split: ImageSplit, tmp_path: Path
+) -> None:
+    def cfg() -> TrainConfig:
+        return TrainConfig(arch="small_cnn", epochs=3, batch_size=64, max_train=128, eval_clean=16)
+
+    out = tmp_path / "s.pt"
+    _, first = train(cfg(), train_split, test_split, CPU, out, stop_after=2, log=lambda m: None)
+    assert [h.epoch for h in first] == [1, 2]
+    _, rest = train(cfg(), train_split, test_split, CPU, out, resume=True, stop_after=2)
+    assert [h.epoch for h in rest] == [1, 2, 3]
+    # the schedule is unchanged: the last epoch ends at the same learning rate as a single run
+    _, whole = train(cfg(), train_split, test_split, CPU, None, log=lambda m: None)
+    assert rest[-1].lr == pytest.approx(whole[-1].lr)
+
+
 def test_training_reduces_loss(train_split: ImageSplit, test_split: ImageSplit) -> None:
     cfg = TrainConfig(
         arch="small_cnn",

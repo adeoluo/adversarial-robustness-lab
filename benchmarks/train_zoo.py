@@ -43,6 +43,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--memory-fraction", type=float, default=0.36)
     parser.add_argument("--epochs", type=int, default=None, help="override the epoch count")
+    parser.add_argument(
+        "--stop-after", type=int, default=None, help="train at most this many epochs, then exit 3"
+    )
     args = parser.parse_args(argv)
     cfg = ZOO[args.name]
     if args.epochs is not None:
@@ -58,13 +61,14 @@ def main(argv: list[str] | None = None) -> int:
         checkpoint(args.name),
         resume=args.resume,
         log=lambda m: print(m, flush=True),
+        stop_after=args.stop_after,
     )
     payload = run_metadata(cfg, model, history)
     payload["name"] = args.name
     payload["device"] = str(device)
     payload["hardware"] = hardware()
     write_json(RESULTS / "train" / f"{args.name}.json", payload)
-    return 0
+    return 0 if len(history) >= cfg.epochs else 3
 
 
 if __name__ == "__main__":

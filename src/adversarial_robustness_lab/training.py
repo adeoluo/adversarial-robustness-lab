@@ -206,8 +206,13 @@ def train(
     out: Path | str | None = None,
     resume: bool = False,
     log: Callable[[str], None] = print,
+    stop_after: int | None = None,
 ) -> tuple[nn.Module, list[EpochLog]]:
-    """Train ``cfg.arch`` with ``cfg.method``; checkpoint to ``out`` after every epoch."""
+    """Train ``cfg.arch`` with ``cfg.method``; checkpoint to ``out`` after every epoch.
+
+    ``stop_after`` ends this call after that many epochs without changing the learning
+    rate schedule, so a long run can proceed as a sequence of resumed steps.
+    """
     cfg.validate()
     gen = seed_everything(cfg.seed)
     model = build_model(cfg.arch).to(device)
@@ -239,7 +244,8 @@ def train(
     x_test, y_test = test_split.tensors(device, as_uint8=True)
     steps_per_epoch = -(-x_train.shape[0] // cfg.batch_size)
     total_steps = cfg.epochs * steps_per_epoch
-    for epoch in range(start_epoch, cfg.epochs):
+    end_epoch = cfg.epochs if stop_after is None else min(cfg.epochs, start_epoch + stop_after)
+    for epoch in range(start_epoch, end_epoch):
         model.train()
         synchronize(device)
         t0 = time.perf_counter()
@@ -278,6 +284,8 @@ def train(
             meta = run_metadata(cfg, model, history)
             save_checkpoint(out_path, model, cfg.arch, meta)
             torch.save(optimizer.state_dict(), out_path.with_suffix(".opt.pt"))
+        if device.type == "mps":
+            torch.mps.empty_cache()  # pragma: no cover - MPS only
     model.eval()
     return model, history
 
