@@ -93,7 +93,7 @@ result = evaluate_attack(model, PGD(8 / 255, 2 / 255, 20), x, y, eps=8 / 255, no
 print(result.robust_accuracy, result.robust_ci())
 
 ensemble = AutoAttackEnsemble.from_version(8 / 255, "linf", "standard")
-worst = ensemble.run(model, x, y)            # robust mask and which attack broke each image
+worst = ensemble.run(model, x, y)  # robust mask and which attack broke each image
 
 cert = Smooth(model, num_classes=10, sigma=0.25).certify(x[0], n0=100, n=10_000, alpha=0.001)
 print(cert.prediction, cert.radius)
