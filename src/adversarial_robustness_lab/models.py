@@ -39,7 +39,8 @@ class Normalize(nn.Module):
         self.register_buffer("std", torch.tensor(std).view(1, -1, 1, 1))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return (x - self.mean) / self.std
+        mean, std = self.get_buffer("mean"), self.get_buffer("std")
+        return (x - mean) / std
 
 
 class PreActBlock(nn.Module):
@@ -195,7 +196,9 @@ def build_model(name: str, num_classes: int = 10) -> nn.Module:
     try:
         factory = ARCHITECTURES[name]
     except KeyError as exc:
-        raise ValueError(f"unknown architecture {name!r}; choose from {sorted(ARCHITECTURES)}") from exc
+        raise ValueError(
+            f"unknown architecture {name!r}; choose from {sorted(ARCHITECTURES)}"
+        ) from exc
     return factory(num_classes)
 
 

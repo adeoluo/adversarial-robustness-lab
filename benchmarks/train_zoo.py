@@ -13,18 +13,17 @@ from __future__ import annotations
 import argparse
 import sys
 
-from common import RESULTS, checkpoint, hardware, write_json
-
 from adversarial_robustness_lab.data import load_cifar10
 from adversarial_robustness_lab.runtime import limit_memory, pick_device
 from adversarial_robustness_lab.training import TrainConfig, run_metadata, train
+from common import RESULTS, checkpoint, hardware, write_json
 
 EPS = 8 / 255
 ZOO: dict[str, TrainConfig] = {
     "small_cnn_standard": TrainConfig(arch="small_cnn", method="standard", epochs=20, lr_max=0.05),
     "rn18_standard": TrainConfig(arch="preact_resnet18", method="standard", epochs=10),
-    "rn18_fgsm_rs": TrainConfig(
-        arch="preact_resnet18", method="fgsm_rs", epochs=10, lr_max=0.2, eps=EPS
+    "wrn16_2_fgsm_rs": TrainConfig(
+        arch="wrn_16_2", method="fgsm_rs", epochs=10, lr_max=0.2, eps=EPS
     ),
     "wrn16_2_pgd": TrainConfig(
         arch="wrn_16_2", method="pgd", epochs=10, eps=EPS, alpha=2 / 255, steps=5, lr_max=0.1
@@ -52,7 +51,12 @@ def main(argv: list[str] | None = None) -> int:
     limit_memory(device, args.memory_fraction)
     data = load_cifar10()
     model, history = train(
-        cfg, data.train, data.test, device, checkpoint(args.name), resume=args.resume,
+        cfg,
+        data.train,
+        data.test,
+        device,
+        checkpoint(args.name),
+        resume=args.resume,
         log=lambda m: print(m, flush=True),
     )
     payload = run_metadata(cfg, model, history)

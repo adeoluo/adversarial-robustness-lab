@@ -43,7 +43,9 @@ CIFAR10_STD: tuple[float, float, float] = (0.2471, 0.2435, 0.2616)
 ARCHIVE_NAME = "cifar-10-python.tar.gz"
 ARCHIVE_MD5 = "c58f30108f718f92721af3b95e74349a"
 ARCHIVE_URL = "https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz"
-DEFAULT_DATA_DIR = Path(__file__).resolve().parents[3] / ".bench-data" / "adversarial-robustness-lab"
+DEFAULT_DATA_DIR = (
+    Path(__file__).resolve().parents[3] / ".bench-data" / "adversarial-robustness-lab"
+)
 
 
 @dataclass(frozen=True)
@@ -103,7 +105,7 @@ def md5sum(path: Path, chunk: int = 1 << 20) -> str:
 
 def _decode_batch(raw: bytes) -> tuple[np.ndarray, np.ndarray]:
     # The archive is the published dataset; the pickles only hold numpy arrays and lists.
-    batch = pickle.loads(raw, encoding="bytes")  # noqa: S301
+    batch = pickle.loads(raw, encoding="bytes")
     data = np.asarray(batch[b"data"], dtype=np.uint8).reshape(-1, 3, 32, 32)
     labels = np.asarray(batch[b"labels"], dtype=np.uint8)
     return data, labels
@@ -171,7 +173,9 @@ def to_float(x: torch.Tensor) -> torch.Tensor:
     return x
 
 
-def augment(x: torch.Tensor, padding: int = 4, generator: torch.Generator | None = None) -> torch.Tensor:
+def augment(
+    x: torch.Tensor, padding: int = 4, generator: torch.Generator | None = None
+) -> torch.Tensor:
     """Random crop after zero padding, then random horizontal flip, for a batch on any device.
 
     Each image gets its own offset in ``[0, 2 * padding]`` along both axes and its own
@@ -219,7 +223,8 @@ def synthetic_split(n: int = 64, seed: int = 0, num_classes: int = 10) -> ImageS
     """
     rng = np.random.default_rng(seed)
     labels = rng.integers(0, num_classes, size=n).astype(np.uint8)
-    base = rng.uniform(40, 215, size=(num_classes, 3, 1, 1))
+    # Class prototypes are fixed; only labels and noise depend on the seed.
+    base = np.random.default_rng(1234).uniform(40, 215, size=(num_classes, 3, 1, 1))
     images = np.repeat(np.repeat(base[labels], 32, axis=2), 32, axis=3)
     for i, label in enumerate(labels):
         images[i, :, int(label) * 3 : int(label) * 3 + 2, :] += 60

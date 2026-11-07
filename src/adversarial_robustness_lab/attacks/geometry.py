@@ -27,7 +27,7 @@ def check_norm(norm: str) -> Norm:
     """Validate a norm name and return it typed."""
     if norm not in NORMS:
         raise ValueError(f"norm must be one of {NORMS}, got {norm!r}")
-    return norm  # type: ignore[return-value]
+    return "linf" if norm == "linf" else "l2"
 
 
 def flat_norm(t: torch.Tensor, norm: Norm) -> torch.Tensor:

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import platform
@@ -25,12 +26,10 @@ def checkpoint(name: str) -> Path:
 
 def hardware() -> dict[str, Any]:
     chip = platform.processor()
-    try:
+    with contextlib.suppress(OSError, subprocess.CalledProcessError):
         chip = subprocess.run(
             ["sysctl", "-n", "machdep.cpu.brand_string"], capture_output=True, text=True, check=True
         ).stdout.strip()
-    except (OSError, subprocess.CalledProcessError):
-        pass
     return {
         "chip": chip,
         "cpus": os.cpu_count(),

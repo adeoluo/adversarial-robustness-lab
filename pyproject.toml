@@ -72,6 +72,8 @@ disallow_untyped_defs = true
 # torch modules subclass nn.Module, which mypy sees as Any in some torch builds.
 disallow_subclassing_any = false
 disallow_untyped_calls = false
+# torch operators are typed as returning Any.
+warn_return_any = false
 
 [[tool.mypy.overrides]]
 module = ["torchattacks.*", "scipy.*", "statsmodels.*"]
