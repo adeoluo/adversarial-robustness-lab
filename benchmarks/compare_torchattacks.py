@@ -7,7 +7,8 @@ the same test images; lower robust accuracy means a stronger attack. Cheap attac
 (FGSM, PGD, PGD-L2) use ``--n-cheap`` images, the costly ones (C&W, APGD, Square)
 ``--n-costly`` and the AutoAttack pair ``--n-autoattack``. torchattacks' AutoAttack
 includes FAB-T, which this package does not implement. ``--only`` runs a subset of the
-pairs and merges them into the existing results file. Results: ``benchmarks/results/compare/<name>.json``.
+pairs and merges them into the existing results file.
+Results: ``benchmarks/results/compare/<name>.json``.
 """
 
 from __future__ import annotations
