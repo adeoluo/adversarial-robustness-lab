@@ -1,0 +1,49 @@
+# Adversarial Robustness Lab
+
+> Evasion attacks, adversarial training and randomized smoothing certification for CIFAR-10 classifiers, measured on the full test set.
+
+Languages: Python. License: MIT. Source: https://github.com/adeoluo/adversarial-robustness-lab
+
+## Docs
+
+- [README](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/README.md): motivation, architecture, results, quickstart, design decisions, evaluation, responsible ai, limitations, roadmap
+- [AGENTS.md](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/AGENTS.md): layout, commands and conventions for changing the code
+- [Architecture diagram](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/docs/architecture/architecture.mmd): Mermaid source of the component diagram
+- [Architecture](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/docs/ARCHITECTURE.md)
+- [Data card: CIFAR-10](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/docs/DATA_CARD.md)
+- [Definition of Done](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/docs/DEFINITION_OF_DONE.md)
+- [Evaluation Report - Adversarial Robustness Lab](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/docs/EVALUATION_REPORT.md)
+- [Model / System Card - Adversarial Robustness Lab](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/docs/MODEL_CARD.md)
+- [Threat model](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/docs/THREAT_MODEL.md)
+- [ADR-0001: Record architecture decisions](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/docs/adr/0001-record-architecture-decisions.md)
+- [ADR-0002: Pixel-space threat model with normalization inside the model, verified on every batch](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/docs/adr/0002-pixel-space-threat-model-and-verification.md)
+- [ADR-0003: Report the worst case over an AutoAttack-style ensemble, not a single attack](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/docs/adr/0003-autoattack-style-ensemble.md)
+- [ADR-0004: Adversarial training sized for an 8 GB Apple M1 shared with other work](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/docs/adr/0004-adversarial-training-budget.md)
+- [ADR-0005: Exact Clopper-Pearson bounds implemented in the package, and gradient-masking checks](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/docs/adr/0005-exact-certification-statistics.md)
+- [ADR-0006: PyTorch for every attack, no compiled extension](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/docs/adr/0006-pytorch-without-compiled-core.md)
+- [ADR-NNNN: <short title>](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/docs/adr/template.md)
+- [Changelog](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/CHANGELOG.md): release history
+
+## Source
+
+- [src/adversarial_robustness_lab/__init__.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/__init__.py): Adversarial Robustness Lab - package root.
+- [src/adversarial_robustness_lab/attacks/__init__.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/attacks/__init__.py): Evasion attacks: FGSM, PGD (L-infinity and L2), C&W L2, APGD, APGD-T, Square, ensembles.
+- [src/adversarial_robustness_lab/attacks/apgd.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/attacks/apgd.py): Auto-PGD: APGD-CE, APGD-DLR and targeted APGD-T (Croce and Hein, 2020).
+- [src/adversarial_robustness_lab/attacks/autoattack.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/attacks/autoattack.py): An AutoAttack-style ensemble: run attacks in sequence on the points still robust.
+- [src/adversarial_robustness_lab/attacks/base.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/attacks/base.py): Common interface for evasion attacks.
+- [src/adversarial_robustness_lab/attacks/cw.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/attacks/cw.py): Carlini-Wagner L2 attack (Carlini and Wagner, 2017).
+- [src/adversarial_robustness_lab/attacks/geometry.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/attacks/geometry.py): Threat-model geometry shared by every attack: norms, projections and random starts.
+- [src/adversarial_robustness_lab/attacks/losses.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/attacks/losses.py): Objective functions maximized by the attacks, all returned per sample.
+- [src/adversarial_robustness_lab/attacks/pgd.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/attacks/pgd.py): Gradient attacks with a fixed step: FGSM and projected gradient descent (PGD).
+- [src/adversarial_robustness_lab/attacks/square.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/attacks/square.py): Square attack, L-infinity (Andriushchenko et al., 2020): a score-based black-box attack.
+- [src/adversarial_robustness_lab/cli.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/cli.py): Command line: ``python -m adversarial_robustness_lab <command>``.
+- [src/adversarial_robustness_lab/data.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/data.py): CIFAR-10 loading, caching and on-device augmentation.
+- [src/adversarial_robustness_lab/evaluation.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/evaluation.py): Robust accuracy evaluation with threat-model verification.
+- [src/adversarial_robustness_lab/masking.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/masking.py): A deliberately gradient-masking defense, and the adaptive attack that breaks it.
+- [src/adversarial_robustness_lab/models.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/models.py): Classifiers for CIFAR-10: PreAct ResNet-18, WideResNet and a small CNN.
+- [src/adversarial_robustness_lab/runtime.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/runtime.py): Device selection, seeding, memory limits and checkpoints.
+- [src/adversarial_robustness_lab/sanity.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/sanity.py): Gradient-masking sanity checks (Athalye et al., 2018; Carlini et al., 2019).
+- [src/adversarial_robustness_lab/service.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/service.py): HTTP service: classify, attack and certify CIFAR-10 images with a trained checkpoint.
+- [src/adversarial_robustness_lab/smoothing.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/smoothing.py): Randomized smoothing certification (Cohen, Rosenfeld and Kolter, ICML 2019).
+- [src/adversarial_robustness_lab/stats.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/stats.py): Statistics for robustness claims: exact binomial tools and confidence intervals.
+- [src/adversarial_robustness_lab/training.py](https://github.com/adeoluo/adversarial-robustness-lab/blob/main/src/adversarial_robustness_lab/training.py): Training: standard, PGD adversarial training, TRADES, fast FGSM training and noise.
