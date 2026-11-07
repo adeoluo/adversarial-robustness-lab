@@ -61,6 +61,10 @@ select = ["E", "F", "I", "N", "UP", "B", "SIM", "C4", "RUF"]
 # N812/N806: torch.nn.functional as F and math-style capital names (X, Y, N) are conventional here.
 ignore = ["N812", "N806", "N803"]
 
+[tool.ruff.lint.per-file-ignores]
+# Markdown table rows are clearer on one line.
+"benchmarks/report.py" = ["E501"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["adversarial_robustness_lab"]
 
