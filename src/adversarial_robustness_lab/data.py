@@ -17,6 +17,7 @@ with per-image transforms on Apple silicon and keeps peak memory predictable.
 from __future__ import annotations
 
 import hashlib
+import os
 import pickle
 import tarfile
 from collections.abc import Iterator
@@ -43,8 +44,11 @@ CIFAR10_STD: tuple[float, float, float] = (0.2471, 0.2435, 0.2616)
 ARCHIVE_NAME = "cifar-10-python.tar.gz"
 ARCHIVE_MD5 = "c58f30108f718f92721af3b95e74349a"
 ARCHIVE_URL = "https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz"
-DEFAULT_DATA_DIR = (
-    Path(__file__).resolve().parents[3] / ".bench-data" / "adversarial-robustness-lab"
+DEFAULT_DATA_DIR = Path(
+    os.environ.get(
+        "ARL_DATA_DIR",
+        Path(__file__).resolve().parents[3] / ".bench-data" / "adversarial-robustness-lab",
+    )
 )
 
 
