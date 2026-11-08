@@ -35,7 +35,7 @@ train: ## Train one zoo model: make train NAME=wrn16_2_pgd
 	uv run python benchmarks/train_zoo.py $(NAME) --resume
 
 train-all: ## Train the whole zoo, one run at a time
-	scripts/train_queue.sh small_cnn_standard wrn16_2_standard wrn16_2_pgd wrn16_2_fgsm_rs wrn16_2_trades wrn16_2_noise025 wrn16_2_noise050 rn18_standard
+	scripts/train_queue.sh small_cnn_standard wrn16_2_standard wrn16_2_pgd wrn16_2_fgsm_rs wrn16_2_trades wrn16_2_noise025 wrn16_2_noise050
 
 evaluation: ## Robust accuracy of every model on the full test set
 	uv run python benchmarks/robustness.py

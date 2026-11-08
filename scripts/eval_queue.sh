@@ -38,8 +38,6 @@ step sanity.py
 step ablations.py
 step robustness.py wrn16_2_fgsm_rs
 step robustness.py small_cnn_standard
-step train_zoo.py rn18_standard --resume --stop-after 4
-step robustness.py rn18_standard
 for pair in "FGSM" "PGD-20" "PGD-L2-20" "C&W-L2 (c=1, 100 steps)" "APGD-CE-100" "Square-1000"; do
   step compare_torchattacks.py wrn16_2_standard --only "$pair"
 done
