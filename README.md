@@ -286,7 +286,7 @@ Randomized smoothing certificates (sigma 0.25) with their Clopper-Pearson lower 
 ## Testing
 
 ```bash
-make test           # 231 tests, about 45 s on CPU
+make test           # 232 tests, about 45 s on CPU
 make coverage       # with the 80% gate (currently 99% line coverage)
 make validation     # the parity group alone: torchattacks, SciPy, statsmodels
 ```
