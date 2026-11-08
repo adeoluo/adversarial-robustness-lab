@@ -4,7 +4,7 @@ All notable changes to this project are documented here. The file is generated
 from Conventional Commits by [git-cliff](https://git-cliff.org) when a release is cut
 with `make cut-release`.
 
-## Unreleased
+## [0.1.0] 2026-11-08
 
 ### Features
 
@@ -22,6 +22,7 @@ with `make cut-release`.
 - Ablations of steps, restarts, query budget and epsilon (#17)
 - Full test set robustness of the FGSM-RS WRN-16-2 and the small CNN (#19)
 - APGD and AutoAttack pairs on the standard WRN-16-2, PreAct ResNet-18 back in the queue (#21)
+- Full test set robustness of the standard PreAct ResNet-18 (#27)
 
 ### Bug fixes
 
@@ -49,3 +50,4 @@ with `make cut-release`.
 - Drop the PreAct ResNet-18 run from the queues (#18)
 - Latest toolchain and CI versions (#20)
 - Citation metadata, llms.txt and release script from current repository data (#25)
+- List benchmark pull requests in the changelog (#26)
