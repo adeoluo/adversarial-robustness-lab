@@ -23,7 +23,7 @@ from adversarial_robustness_lab.evaluation import evaluate_attack
 from adversarial_robustness_lab.masking import InputQuantization, bpda_view
 from adversarial_robustness_lab.runtime import limit_memory, load_checkpoint, pick_device
 from adversarial_robustness_lab.sanity import run_sanity_checks
-from common import INCOMPLETE, RESULTS, Parts, checkpoint, hardware, write_json
+from common import INCOMPLETE, RESULTS, Parts, checkpoint, fingerprint, hardware, write_json
 
 EPS = 8 / 255
 
@@ -40,7 +40,12 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     parts = Parts(
         "sanity",
-        {"n": args.n, "models": args.models, "surrogate": args.surrogate},
+        {
+            "n": args.n,
+            "models": args.models,
+            "surrogate": args.surrogate,
+            "checkpoints": fingerprint(*args.models, args.surrogate),
+        },
         args.max_minutes,
     )
     device = pick_device()

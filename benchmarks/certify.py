@@ -34,7 +34,7 @@ from adversarial_robustness_lab.smoothing import (
     max_certifiable_radius,
 )
 from adversarial_robustness_lab.stats import clopper_pearson_lower, norm_ppf
-from common import RESULTS, RUNS, checkpoint, hardware, write_json
+from common import RESULTS, RUNS, checkpoint, fingerprint, hardware, write_json
 
 RADII = [0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0]
 
@@ -61,7 +61,13 @@ def main(argv: list[str] | None = None) -> int:
     if args.n not in budgets:
         budgets.append(args.n)
     indices = list(range(0, len(test), args.skip))
-    config = {"sigma": sigma, "skip": args.skip, "n0": args.n0, "n": args.n}
+    config = {
+        "sigma": sigma,
+        "skip": args.skip,
+        "n0": args.n0,
+        "n": args.n,
+        "checkpoint": fingerprint(args.name),
+    }
     progress = RUNS / f"{args.name}.certify.json"
     saved = json.loads(progress.read_text()) if progress.exists() else {}
     if saved.get("config") != config:

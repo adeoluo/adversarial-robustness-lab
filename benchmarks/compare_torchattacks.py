@@ -40,7 +40,7 @@ from adversarial_robustness_lab.data import load_cifar10
 from adversarial_robustness_lab.evaluation import evaluate_attack
 from adversarial_robustness_lab.runtime import limit_memory, load_checkpoint, pick_device
 from adversarial_robustness_lab.stats import wilson_interval
-from common import INCOMPLETE, RESULTS, Parts, checkpoint, hardware, write_json
+from common import INCOMPLETE, RESULTS, Parts, checkpoint, fingerprint, hardware, write_json
 
 EPS = 8 / 255
 L2_EPS = 0.5
@@ -80,7 +80,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--memory-fraction", type=float, default=0.36)
     parser.add_argument("--max-minutes", type=float, default=35.0)
     args = parser.parse_args(argv)
-    config = {k: getattr(args, k) for k in ("n_cheap", "n_costly", "n_autoattack")}
+    config: dict[str, object] = {
+        k: getattr(args, k) for k in ("n_cheap", "n_costly", "n_autoattack")
+    }
+    config["checkpoint"] = fingerprint(args.name)
     parts = Parts(f"compare_{args.name}", config, args.max_minutes)
     device = pick_device()
     limit_memory(device, args.memory_fraction)

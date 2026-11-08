@@ -25,7 +25,7 @@ from adversarial_robustness_lab.attacks import APGD, PGD, SquareAttack
 from adversarial_robustness_lab.data import load_cifar10
 from adversarial_robustness_lab.evaluation import evaluate_attack
 from adversarial_robustness_lab.runtime import limit_memory, load_checkpoint, pick_device
-from common import INCOMPLETE, RESULTS, Parts, checkpoint, hardware, write_json
+from common import INCOMPLETE, RESULTS, Parts, checkpoint, fingerprint, hardware, write_json
 
 EPS = 8 / 255
 
@@ -42,7 +42,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--memory-fraction", type=float, default=0.36)
     parser.add_argument("--max-minutes", type=float, default=35.0)
     args = parser.parse_args(argv)
-    config = {"n": args.n, "model": args.model, "eps_models": args.eps_models}
+    config = {
+        "n": args.n,
+        "model": args.model,
+        "eps_models": args.eps_models,
+        "checkpoints": fingerprint(args.model, *args.eps_models),
+    }
     parts = Parts("ablations", config, args.max_minutes)
     device = pick_device()
     limit_memory(device, args.memory_fraction)
