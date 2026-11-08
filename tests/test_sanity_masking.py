@@ -69,6 +69,19 @@ def test_sanity_checks_flag_masked_gradients(
     assert not report.passed
 
 
+def test_zero_gradient_fraction_does_not_depend_on_batch_size(
+    trained_cnn: nn.Module, batch: tuple[torch.Tensor, torch.Tensor]
+) -> None:
+    x, y = batch
+    masked = InputQuantization(trained_cnn, bits=3).eval()
+    xm = torch.cat([x[: x.shape[0] // 2], x[: x.shape[0] // 2] * 0.5 + 0.25])
+    whole = zero_gradient_fraction(trained_cnn, xm, y[: xm.shape[0]], batch_size=xm.shape[0])
+    for bs in (1, 3, 7):
+        assert zero_gradient_fraction(trained_cnn, xm, y[: xm.shape[0]], batch_size=bs) == whole
+        assert zero_gradient_fraction(masked, xm, y[: xm.shape[0]], batch_size=bs) == (1.0, 0.0)
+    assert zero_gradient_fraction(trained_cnn, x[:0], y[:0]) == (0.0, 0.0)
+
+
 def test_bpda_recovers_attack_on_quantized_model(
     trained_cnn: nn.Module, batch: tuple[torch.Tensor, torch.Tensor]
 ) -> None:
