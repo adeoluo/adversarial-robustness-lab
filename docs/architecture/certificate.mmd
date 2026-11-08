@@ -1,0 +1,14 @@
+flowchart TB
+    classDef edge     fill:#F59E0B,stroke:#1E293B,color:#1E293B,stroke-width:1px;
+    classDef core     fill:#6366F1,stroke:#1E293B,color:#ffffff,stroke-width:1px;
+    classDef data     fill:#10B981,stroke:#1E293B,color:#ffffff,stroke-width:1px;
+    classDef control  fill:#0EA5E9,stroke:#1E293B,color:#ffffff,stroke-width:1px;
+    classDef obs      fill:#CBD5E1,stroke:#1E293B,color:#1E293B,stroke-width:1px;
+    X["test image x"]:::edge --> S0["n0 = 100 noisy copies"]:::core
+    S0 --> G["guess class A"]:::core
+    X --> S["n noisy copies"]:::core
+    G --> C["count of A"]:::core
+    S --> C
+    C --> L{"pA lower bound<br/>Clopper-Pearson"}:::control
+    L -->|pA > 1/2| R["radius sigma * PhiInv pA"]:::obs
+    L -->|pA <= 1/2| ABS["abstain"]:::obs
