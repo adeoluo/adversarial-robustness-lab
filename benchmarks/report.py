@@ -15,7 +15,6 @@ RESULTS = Path(__file__).resolve().parent / "results"
 ZOO = [
     ("small_cnn_standard", "Small CNN", "standard"),
     ("wrn16_2_standard", "WRN-16-2", "standard"),
-    ("rn18_standard", "PreAct ResNet-18", "standard"),
     ("wrn16_2_fgsm_rs", "WRN-16-2", "FGSM-RS (fast AT)"),
     ("wrn16_2_pgd", "WRN-16-2", "PGD-AT (5 steps)"),
     ("wrn16_2_trades", "WRN-16-2", "TRADES (beta 6)"),
