@@ -144,7 +144,31 @@ gradients, already gets it down to 43.8%. FGSM-RS shows no catastrophic overfitt
 PGD-AT on these images). Per-check details: `make report` or the
 [evaluation report](docs/EVALUATION_REPORT.md#sanity-checks).
 
-ABLATION_SECTION
+**Ablations and scaling** (PGD-trained WideResNet-16-2, first 1,000 test images, 8/255)
+
+| PGD steps | 1 | 2 | 5 | 10 | 20 | 50 | 100 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Robust accuracy | 44.0% | 42.0% | 40.9% | 40.8% | 40.7% | 40.7% | 40.7% |
+
+| Square queries | 10 | 30 | 100 | 300 | 1,000 | 3,000 | 5,000 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Robust accuracy | 64.6% | 62.5% | 59.8% | 53.8% | 47.8% | 43.2% | 41.3% |
+
+PGD saturates by 20 steps, and 1, 2 or 5 restarts (step 2/255) give the same 40.4%; APGD-CE is 0.4 to
+0.5 points stronger than PGD at every iteration count from 10 to 100. Square needs about
+5,000 queries to come within 0.6 points of PGD-20 (median 176 queries
+on the images it fools). Robust accuracy against epsilon (PGD-20):
+
+| Model | 1/255 | 2/255 | 4/255 | 6/255 | 8/255 | 10/255 | 12/255 | 16/255 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| WRN-16-2 standard | 21.8% | 1.1% | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% |
+| WRN-16-2 FGSM-RS | 70.6% | 65.8% | 57.4% | 48.5% | 40.4% | 32.7% | 25.0% | 10.7% |
+| WRN-16-2 PGD-AT | 67.6% | 65.2% | 56.9% | 48.5% | 40.7% | 33.0% | 24.5% | 10.8% |
+| WRN-16-2 TRADES | 68.0% | 64.8% | 57.0% | 48.8% | 40.8% | 33.1% | 26.3% | 14.8% |
+
+The three robust models are within 0.5 points of each other from 4/255 to 10/255; at
+1/255 FGSM-RS leads by about 3 points, and beyond the training budget TRADES degrades
+more slowly (14.8% against 10.8% at 16/255).
 
 ## Quickstart
 
