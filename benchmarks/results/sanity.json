@@ -1,0 +1,329 @@
+{
+  "n": 1000,
+  "eps": 0.03137254901960784,
+  "results": {
+    "wrn16_2_pgd": {
+      "passed": true,
+      "checks": [
+        {
+          "name": "iterative_beats_single_step",
+          "passed": true,
+          "detail": "PGD-20 0.4070 vs FGSM 0.4400",
+          "values": {
+            "pgd": 0.407,
+            "fgsm": 0.44
+          }
+        },
+        {
+          "name": "white_box_beats_black_box",
+          "passed": true,
+          "detail": "PGD-20 0.4070 vs Square-1000 0.4700",
+          "values": {
+            "pgd": 0.407,
+            "square": 0.47
+          }
+        },
+        {
+          "name": "unbounded_attack_succeeds",
+          "passed": true,
+          "detail": "PGD-50 at eps=1: 0.0000",
+          "values": {
+            "unbounded": 0.0
+          }
+        },
+        {
+          "name": "monotone_in_eps",
+          "passed": true,
+          "detail": "accuracy at eps x (1/4, 1/2, 1, 2): 0.6520, 0.5690, 0.4070, 0.1080",
+          "values": {
+            "eps_0.00784": 0.652,
+            "eps_0.01569": 0.569,
+            "eps_0.03137": 0.407,
+            "eps_0.06275": 0.108
+          }
+        },
+        {
+          "name": "more_steps_help_attacker",
+          "passed": true,
+          "detail": "PGD-100 0.4070 vs PGD-20 0.4070",
+          "values": {
+            "pgd_more": 0.407,
+            "pgd": 0.407
+          }
+        },
+        {
+          "name": "gradients_informative",
+          "passed": true,
+          "detail": "all-zero gradients 0.0000, non-finite 0.0000",
+          "values": {
+            "zero_gradient": 0.0,
+            "nonfinite_gradient": 0.0
+          }
+        },
+        {
+          "name": "random_noise_weaker",
+          "passed": true,
+          "detail": "uniform noise 0.7080 vs PGD-20 0.4070",
+          "values": {
+            "noise": 0.708,
+            "pgd": 0.407
+          }
+        },
+        {
+          "name": "transfer_weaker_than_white_box",
+          "passed": true,
+          "detail": "transfer 0.6900 vs white-box 0.4070",
+          "values": {
+            "transfer": 0.69,
+            "pgd": 0.407
+          }
+        }
+      ]
+    },
+    "wrn16_2_trades": {
+      "passed": true,
+      "checks": [
+        {
+          "name": "iterative_beats_single_step",
+          "passed": true,
+          "detail": "PGD-20 0.4080 vs FGSM 0.4340",
+          "values": {
+            "pgd": 0.408,
+            "fgsm": 0.434
+          }
+        },
+        {
+          "name": "white_box_beats_black_box",
+          "passed": true,
+          "detail": "PGD-20 0.4080 vs Square-1000 0.4570",
+          "values": {
+            "pgd": 0.408,
+            "square": 0.457
+          }
+        },
+        {
+          "name": "unbounded_attack_succeeds",
+          "passed": true,
+          "detail": "PGD-50 at eps=1: 0.0000",
+          "values": {
+            "unbounded": 0.0
+          }
+        },
+        {
+          "name": "monotone_in_eps",
+          "passed": true,
+          "detail": "accuracy at eps x (1/4, 1/2, 1, 2): 0.6480, 0.5700, 0.4080, 0.1480",
+          "values": {
+            "eps_0.00784": 0.648,
+            "eps_0.01569": 0.57,
+            "eps_0.03137": 0.408,
+            "eps_0.06275": 0.148
+          }
+        },
+        {
+          "name": "more_steps_help_attacker",
+          "passed": true,
+          "detail": "PGD-100 0.4080 vs PGD-20 0.4080",
+          "values": {
+            "pgd_more": 0.408,
+            "pgd": 0.408
+          }
+        },
+        {
+          "name": "gradients_informative",
+          "passed": true,
+          "detail": "all-zero gradients 0.0000, non-finite 0.0000",
+          "values": {
+            "zero_gradient": 0.0,
+            "nonfinite_gradient": 0.0
+          }
+        },
+        {
+          "name": "random_noise_weaker",
+          "passed": true,
+          "detail": "uniform noise 0.7110 vs PGD-20 0.4080",
+          "values": {
+            "noise": 0.711,
+            "pgd": 0.408
+          }
+        },
+        {
+          "name": "transfer_weaker_than_white_box",
+          "passed": true,
+          "detail": "transfer 0.6990 vs white-box 0.4080",
+          "values": {
+            "transfer": 0.699,
+            "pgd": 0.408
+          }
+        }
+      ]
+    },
+    "wrn16_2_fgsm_rs": {
+      "passed": true,
+      "checks": [
+        {
+          "name": "iterative_beats_single_step",
+          "passed": true,
+          "detail": "PGD-20 0.4040 vs FGSM 0.4440",
+          "values": {
+            "pgd": 0.404,
+            "fgsm": 0.444
+          }
+        },
+        {
+          "name": "white_box_beats_black_box",
+          "passed": true,
+          "detail": "PGD-20 0.4040 vs Square-1000 0.4740",
+          "values": {
+            "pgd": 0.404,
+            "square": 0.474
+          }
+        },
+        {
+          "name": "unbounded_attack_succeeds",
+          "passed": true,
+          "detail": "PGD-50 at eps=1: 0.0000",
+          "values": {
+            "unbounded": 0.0
+          }
+        },
+        {
+          "name": "monotone_in_eps",
+          "passed": true,
+          "detail": "accuracy at eps x (1/4, 1/2, 1, 2): 0.6580, 0.5740, 0.4040, 0.1070",
+          "values": {
+            "eps_0.00784": 0.658,
+            "eps_0.01569": 0.574,
+            "eps_0.03137": 0.404,
+            "eps_0.06275": 0.107
+          }
+        },
+        {
+          "name": "more_steps_help_attacker",
+          "passed": true,
+          "detail": "PGD-100 0.4050 vs PGD-20 0.4040",
+          "values": {
+            "pgd_more": 0.405,
+            "pgd": 0.404
+          }
+        },
+        {
+          "name": "gradients_informative",
+          "passed": true,
+          "detail": "all-zero gradients 0.0000, non-finite 0.0000",
+          "values": {
+            "zero_gradient": 0.0,
+            "nonfinite_gradient": 0.0
+          }
+        },
+        {
+          "name": "random_noise_weaker",
+          "passed": true,
+          "detail": "uniform noise 0.7320 vs PGD-20 0.4040",
+          "values": {
+            "noise": 0.732,
+            "pgd": 0.404
+          }
+        },
+        {
+          "name": "transfer_weaker_than_white_box",
+          "passed": true,
+          "detail": "transfer 0.7170 vs white-box 0.4040",
+          "values": {
+            "transfer": 0.717,
+            "pgd": 0.404
+          }
+        }
+      ]
+    },
+    "wrn16_2_pgd+quantize3": {
+      "passed": false,
+      "checks": [
+        {
+          "name": "iterative_beats_single_step",
+          "passed": true,
+          "detail": "PGD-20 0.7050 vs FGSM 0.7140",
+          "values": {
+            "pgd": 0.705,
+            "fgsm": 0.714
+          }
+        },
+        {
+          "name": "white_box_beats_black_box",
+          "passed": false,
+          "detail": "PGD-20 0.7050 vs Square-1000 0.4380",
+          "values": {
+            "pgd": 0.705,
+            "square": 0.438
+          }
+        },
+        {
+          "name": "unbounded_attack_succeeds",
+          "passed": false,
+          "detail": "PGD-50 at eps=1: 0.1760",
+          "values": {
+            "unbounded": 0.176
+          }
+        },
+        {
+          "name": "monotone_in_eps",
+          "passed": true,
+          "detail": "accuracy at eps x (1/4, 1/2, 1, 2): 0.7130, 0.7100, 0.7050, 0.6930",
+          "values": {
+            "eps_0.00784": 0.713,
+            "eps_0.01569": 0.71,
+            "eps_0.03137": 0.705,
+            "eps_0.06275": 0.693
+          }
+        },
+        {
+          "name": "more_steps_help_attacker",
+          "passed": true,
+          "detail": "PGD-100 0.7050 vs PGD-20 0.7050",
+          "values": {
+            "pgd_more": 0.705,
+            "pgd": 0.705
+          }
+        },
+        {
+          "name": "gradients_informative",
+          "passed": false,
+          "detail": "all-zero gradients 1.0000, non-finite 0.0000",
+          "values": {
+            "zero_gradient": 1.0,
+            "nonfinite_gradient": 0.0
+          }
+        },
+        {
+          "name": "random_noise_weaker",
+          "passed": true,
+          "detail": "uniform noise 0.7050 vs PGD-20 0.7050",
+          "values": {
+            "noise": 0.705,
+            "pgd": 0.705
+          }
+        },
+        {
+          "name": "transfer_weaker_than_white_box",
+          "passed": false,
+          "detail": "transfer 0.6900 vs white-box 0.7050",
+          "values": {
+            "transfer": 0.69,
+            "pgd": 0.705
+          }
+        }
+      ],
+      "pgd20": 0.705,
+      "pgd20_bpda": 0.405,
+      "square1000": 0.438,
+      "clean": 0.714
+    }
+  },
+  "hardware": {
+    "chip": "Apple M1",
+    "cpus": 8,
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
+    "torch": "2.15.0",
+    "python": "3.12.14"
+  }
+}
