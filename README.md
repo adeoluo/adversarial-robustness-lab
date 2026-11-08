@@ -100,7 +100,32 @@ sigma 0.25 and 1.6 for sigma 0.50, so the zero at r = 1.00 (sigma 0.25) is a pro
 the sampling budget, not only of the model. The full curves at n = 100, 1,000 and 10,000
 are in the [evaluation report](docs/EVALUATION_REPORT.md#sampling-budget).
 
-COMPARE_SECTION
+**Attack strength against torchattacks** (3.5.1) on the PGD-trained WideResNet-16-2, same
+budgets, same images, same model. A lower robust accuracy means a stronger attack;
+the verdict is the exact two-sided sign test on the images only one library broke.
+
+| Attack | Images | Ours: robust acc | torchattacks: robust acc | Broken only by ours / only by torchattacks | Verdict | Time ours / torchattacks |
+|---|---:|---:|---:|---:|---|---:|
+| FGSM | 10,000 | 43.02% | 43.02% | 0 / 0 | tie (identical outcomes) | 20 s / 15 s |
+| PGD-20 | 10,000 | 39.11% | 39.05% | 13 / 19 | tie (p = 0.38) | 153 s / 141 s |
+| PGD-L2-20 | 10,000 | 53.24% | 53.01% | 1 / 24 | torchattacks stronger | 192 s / 174 s |
+| C&W-L2 (c=1, 100 steps) | 1,000 | 51.90% | 51.90% | 0 / 0 | tie (identical outcomes) | 128 s / 113 s |
+| APGD-CE-100 | 1,000 | 40.20% | 40.20% | 0 / 0 | tie (identical outcomes) | 86 s / 73 s |
+| APGD-DLR-100 | 1,000 | 39.30% | 39.30% | 0 / 0 | tie (identical outcomes) | 101 s / 107 s |
+| Square-1000 | 1,000 | 47.00% | 46.70% | 3 / 6 | tie (p = 0.51) | 420 s / 367 s |
+| AutoAttack standard | 500 | 36.80% | 36.80% | 0 / 0 | tie (identical outcomes) | 1019 s / 1039 s |
+
+Seven of eight pairs are ties: FGSM, C&W, both APGD losses and the ensemble agree image
+for image, and PGD-20 and Square differ on 32 and 9 images without a significant direction.
+torchattacks' PGD-L2 is stronger (24 images against 1, 0.23 points): the two differ in the random start, which here is
+uniform over the volume of the L2 ball (so almost always on its surface in 3,072
+dimensions) and in torchattacks is a random direction at a uniformly drawn radius. That is
+the likely cause; it was not isolated with an ablation. Ours is 8 to 35% slower on six
+pairs and slightly faster on APGD-DLR and the ensemble. The
+AutoAttack row compares our APGD-CE, APGD-T (9 targets) and Square (5,000 queries)
+sequence with the full torchattacks AutoAttack, which also runs FAB-T.
+
+SANITY_SECTION
 
 ## Quickstart
 
