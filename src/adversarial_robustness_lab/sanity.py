@@ -80,16 +80,24 @@ class TransferAttack(Attack):
 
 
 def zero_gradient_fraction(
-    model: nn.Module, x: torch.Tensor, y: torch.Tensor
+    model: nn.Module, x: torch.Tensor, y: torch.Tensor, batch_size: int = 100
 ) -> tuple[float, float]:
-    """Fractions of inputs whose loss gradient is all zero and non-finite."""
-    xg = x.detach().clone().requires_grad_(True)
-    loss = nn.functional.cross_entropy(model(xg), y, reduction="sum")
-    (grad,) = torch.autograd.grad(loss, xg)
-    flat = grad.flatten(1)
-    zero = (flat.abs().amax(1) == 0).float().mean()
-    bad = (~torch.isfinite(flat).all(1)).float().mean()
-    return float(zero), float(bad)
+    """Fractions of inputs whose loss gradient is all zero and non-finite.
+
+    The loss is summed per example, so each input's gradient does not depend on the
+    batch; batching only bounds memory.
+    """
+    zero = bad = 0
+    for start in range(0, x.shape[0], batch_size):
+        xg = x[start : start + batch_size].detach().clone().requires_grad_(True)
+        yb = y[start : start + batch_size]
+        loss = nn.functional.cross_entropy(model(xg), yb, reduction="sum")
+        (grad,) = torch.autograd.grad(loss, xg)
+        flat = grad.flatten(1)
+        zero += int((flat.abs().amax(1) == 0).sum())
+        bad += int((~torch.isfinite(flat).all(1)).sum())
+    n = max(x.shape[0], 1)
+    return zero / n, bad / n
 
 
 def run_sanity_checks(
