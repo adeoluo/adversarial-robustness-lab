@@ -29,9 +29,11 @@ step robustness.py wrn16_2_pgd
 step robustness.py wrn16_2_trades
 step certify.py wrn16_2_noise025
 step certify.py wrn16_2_noise050
-for pair in "FGSM" "PGD-20" "PGD-L2-20" "C&W-L2 (c=1, 100 steps)" "APGD-CE-100" "APGD-DLR-100" "Square-1000" "AutoAttack standard"; do
+for pair in "FGSM" "PGD-20" "PGD-L2-20" "C&W-L2 (c=1, 100 steps)" "APGD-CE-100" "APGD-DLR-100" "Square-1000"; do
   step compare_torchattacks.py wrn16_2_pgd --only "$pair"
 done
+# torchattacks.AutoAttack keeps more state per image; smaller batches stay under the memory cap.
+step compare_torchattacks.py wrn16_2_pgd --only "AutoAttack standard" --batch-size 50
 step sanity.py
 step ablations.py
 step robustness.py wrn16_2_fgsm_rs
