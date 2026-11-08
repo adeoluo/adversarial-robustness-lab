@@ -11,7 +11,8 @@ results (JSON summaries and per-image outcomes) are in `benchmarks/results/`, an
   1,000 test images (AutoAttack pair: first 500) and certification every 20th test image
   (500 images). Subsets are fixed and stated with each table. See
   [DATA_CARD.md](DATA_CARD.md).
-- **Models:** trained here, one seed (0) each; see [MODEL_CARD.md](MODEL_CARD.md) and
+- **Models:** trained here, one seed (0) each, every checkpoint from its final epoch;
+  see [MODEL_CARD.md](MODEL_CARD.md) and
   [ADR-0004](adr/0004-adversarial-training-budget.md) for the budget.
 - **Threat model:** L-infinity, eps = 8/255 in pixel units, unless stated. Every
   adversarial batch is checked to lie in [0, 1] and within eps before it is scored
@@ -24,11 +25,14 @@ results (JSON summaries and per-image outcomes) are in `benchmarks/results/`, an
   ([ADR-0003](adr/0003-autoattack-style-ensemble.md)).
 - **Uncertainty:** 95% Wilson intervals over test images for every accuracy. Attack
   comparisons on the same images use the exact two-sided binomial (sign) test on the
-  images only one of the two attacks broke. Training-seed variance is not measured (one
-  seed per model; see threats to validity).
-- **Hardware:** Apple M1 (8 cores, 8 GB unified memory), PyTorch MPS backend, float32,
-  shared with other jobs; MPS memory capped at about 2 GB per process. Wall-clock times
-  are those of this shared machine.
+  images only one of the two attacks broke; the same test compares training methods on
+  their paired per-image outcomes. Training-seed variance is not measured (one seed per
+  model; see threats to validity).
+- **Hardware and software:** Apple M1 (8 cores, 8 GB unified memory), macOS 27.0.1,
+  PyTorch 2.15.0 on the MPS backend in float32, Python 3.12.14, torchattacks 3.5.1;
+  every results file records these. The machine was shared with other jobs and MPS
+  memory was capped at 1.92 GiB per process (`--memory-fraction 0.36`); wall-clock
+  times are those of this shared machine.
 - **Reproduce:** `make train-all`, `make evaluation`, `make compare`, `make certify`,
   `make sanity`, `uv run python benchmarks/ablations.py`, then `make report`.
   `scripts/eval_queue.sh` runs all of it in bounded, resumable steps.
@@ -42,7 +46,9 @@ Printed by `make report` from `benchmarks/results/`.
 
 | Model | Training | Parameters | Epochs | Training time | Clean | FGSM | PGD-20 | Ensemble (95% CI) |
 |---|---|---:|---:|---:|---:|---:|---:|---|
+| Small CNN | standard | 0.59 M | 20 | 8 min | 85.8% | 3.9% | 0.0% | **0.0%** (0.0% to 0.0%) |
 | WRN-16-2 | standard | 0.69 M | 10 | 18 min | 88.7% | 4.4% | 0.0% | **0.0%** (0.0% to 0.0%) |
+| WRN-16-2 | FGSM-RS (fast AT) | 0.69 M | 10 | 20 min | 72.7% | 44.4% | 39.7% | **36.0%** (35.1% to 37.0%) |
 | WRN-16-2 | PGD-AT (5 steps) | 0.69 M | 10 | 49 min | 70.7% | 43.0% | 39.1% | **35.5%** (34.6% to 36.4%) |
 | WRN-16-2 | TRADES (beta 6) | 0.69 M | 10 | 84 min | 70.5% | 42.6% | 39.8% | **35.4%** (34.5% to 36.4%) |
 
@@ -50,7 +56,9 @@ Printed by `make report` from `benchmarks/results/`.
 
 | Model | Clean | After APGD-CE | After APGD-T | After Square | Time (APGD-CE / APGD-T / Square) |
 |---|---:|---:|---:|---:|---|
+| Small CNN standard | 85.81% | 0.00% | 0.00% | 0.00% | 744 s / 0 s / 0 s |
 | WRN-16-2 standard | 88.67% | 0.00% | 0.00% | 0.00% | 1794 s / 0 s / 0 s |
+| WRN-16-2 FGSM-RS (fast AT) | 72.73% | 39.11% | 36.04% | 36.04% | 1150 s / 2006 s / 2147 s |
 | WRN-16-2 PGD-AT (5 steps) | 70.66% | 38.54% | 35.50% | 35.50% | 1852 s / 1199 s / 1168 s |
 | WRN-16-2 TRADES (beta 6) | 70.54% | 39.52% | 35.42% | 35.42% | 2760 s / 1746 s / 1788 s |
 
@@ -58,7 +66,9 @@ Printed by `make report` from `benchmarks/results/`.
 
 | Model | PGD-20 (CE) | PGD-20 (C&W margin) |
 |---|---:|---:|
+| Small CNN standard | 0.0% | 0.0% |
 | WRN-16-2 standard | 0.0% | 0.0% |
+| WRN-16-2 FGSM-RS (fast AT) | 39.7% | 38.3% |
 | WRN-16-2 PGD-AT (5 steps) | 39.1% | 37.3% |
 | WRN-16-2 TRADES (beta 6) | 39.8% | 36.1% |
 
@@ -76,6 +86,19 @@ wrn16_2_pgd (torchattacks 3.5.1):
 | APGD-DLR-100 | 1,000 | 39.30% | 39.30% | 0 / 0 | tie (identical outcomes) | 101 s / 107 s |
 | Square-1000 | 1,000 | 47.00% | 46.70% | 3 / 6 | tie (p = 0.51) | 420 s / 367 s |
 | AutoAttack standard | 500 | 36.80% | 36.80% | 0 / 0 | tie (identical outcomes) | 1019 s / 1039 s |
+
+wrn16_2_standard (torchattacks 3.5.1):
+
+| Attack | Images | Ours: robust acc | torchattacks: robust acc | Broken only by ours / only by torchattacks | Verdict | Time ours / torchattacks |
+|---|---:|---:|---:|---:|---|---:|
+| FGSM | 10,000 | 4.44% | 4.45% | 4 / 3 | tie (p = 1.00) | 23 s / 19 s |
+| PGD-20 | 10,000 | 0.00% | 0.00% | 0 / 0 | tie (identical outcomes) | 249 s / 279 s |
+| PGD-L2-20 | 10,000 | 0.01% | 0.01% | 0 / 0 | tie (identical outcomes) | 201 s / 252 s |
+| C&W-L2 (c=1, 100 steps) | 1,000 | 0.30% | 1.00% | 7 / 0 | ours stronger | 191 s / 109 s |
+| APGD-CE-100 | 1,000 | 0.00% | 0.00% | 0 / 0 | tie (identical outcomes) | 116 s / 195 s |
+| APGD-DLR-100 | 1,000 | 0.00% | 0.00% | 0 / 0 | tie (identical outcomes) | 163 s / 162 s |
+| Square-1000 | 1,000 | 0.30% | 0.20% | 0 / 1 | tie (p = 1.00) | 125 s / 115 s |
+| AutoAttack standard | 500 | 0.00% | 0.00% | 0 / 0 | tie (identical outcomes) | 104 s / 16 s |
 
 ### Certification
 
@@ -143,21 +166,32 @@ median queries to success: 176.0
 ## Findings
 
 - **Adversarial training works at this scale, and the method matters less than the
-  budget.** PGD-AT and TRADES reach 35.5% and 35.4% ensemble robust accuracy on all
-  10,000 test images (intervals overlap) at about 70.6% clean accuracy, from 88.7% for
-  the standard model, which every attack breaks completely. TRADES took 84 minutes to
-  train against 49 for PGD-AT. Robustness against epsilon is the same for the robust
-  models within 0.5 points from 4/255 to 10/255; TRADES holds up better at 16/255.
+  budget.** FGSM-RS, PGD-AT and TRADES reach 36.0%, 35.5% and 35.4% ensemble robust
+  accuracy on all 10,000 test images; the standard model (88.7% clean) and the small
+  CNN (85.8% clean) are at 0.0% under the ensemble. On the paired per-image
+  outcomes none of the robust accuracy differences is significant (sign test p = 0.056
+  for FGSM-RS against PGD-AT, 0.059 against TRADES, 0.83 for PGD-AT against TRADES);
+  FGSM-RS keeps 2.1 points more clean accuracy than PGD-AT (72.7% against 70.7%,
+  p < 0.001) and trained in 20 minutes against 49 (PGD-AT) and 84 (TRADES). With one
+  seed per model and the short 10-epoch schedule, FGSM-RS showed no catastrophic
+  overfitting. Robustness against epsilon is the same for the robust models within 0.5
+  points from 4/255 to 10/255; TRADES holds up better at 16/255.
 - **PGD-20 overstates robustness by 3.6 to 4.4 points.** APGD-CE and APGD-T remove those
-  images; Square then finds nothing more on either model, which together with the
-  sanity checks is evidence that the white-box attacks are not hampered by masking. The
-  C&W margin loss alone already closes 1.8 to 3.7 points of that gap.
-- **The attacks match torchattacks.** Seven of eight pairs are ties by the sign test,
-  five of them image for image (FGSM, C&W, APGD-CE, APGD-DLR, the ensemble). The one
-  loss is PGD-L2-20, where torchattacks breaks 24 images ours does not and ours breaks 1
-  it does not (53.24% against 53.01%). The two differ in the L2 random start (uniform in
-  the ball's volume here, a uniform radius in torchattacks); this is the likely cause and
-  was not isolated.
+  images; Square then finds nothing more on any of the three robust models, which
+  together with the sanity checks is evidence that the white-box attacks are not
+  hampered by masking. The C&W margin loss alone already closes 1.3 to 3.7 points of
+  that gap.
+- **The attacks match torchattacks.** Fourteen of sixteen pairs on the PGD-trained and
+  the standard WideResNet-16-2 are ties by the sign test, ten of them image for image.
+  The one loss is PGD-L2-20 on the PGD-trained model, where torchattacks breaks 24
+  images ours does not and ours breaks 1 it does not (53.24% against 53.01%). The two
+  differ in the L2 random start (uniform in the ball's volume here, a uniform radius in
+  torchattacks); this is the likely cause and was not isolated. The one win is C&W on the
+  standard model (7 images against 0, 0.30% against 1.00%), also not isolated.
+  torchattacks 3.5.1 runs APGD-CE and APGD-T inside `AutoAttack` with 10 iterations (its
+  default) rather than the reference 100, so its AutoAttack row is a weaker and faster
+  configuration than ours; on both models the outcomes were still identical. Summed over
+  the fourteen non-AutoAttack pairs the two libraries take 2,169 s and 2,122 s.
 - **Certification is 3 to 7 points below Cohen et al. at every radius**, with a model 2.5
   times smaller and 500 images certified with a tenth of their Monte Carlo samples. The
   sampling budget table shows how much of the gap at larger radii is the budget: going
@@ -186,5 +220,11 @@ median queries to success: 176.0
   relative to the cited protocol.
 - **Shared hardware.** Times are measured on a machine running other jobs; they compare
   libraries run under the same conditions, not peak speeds.
+- **Resumed runs.** Long steps save per-image progress and resume. Progress is keyed on
+  the settings and a SHA-256 prefix of every checkpoint used; an earlier version keyed
+  on the settings only, and one evaluation (PreAct ResNet-18, never committed) resumed
+  from predictions of an older checkpoint. After the fix, the clean predictions in every
+  committed robustness file were checked against a fresh CPU pass over all 10,000 test
+  images: they agree image for image.
 - **Test-set near-duplicates.** CIFAR-10 has near-duplicates between train and test
   (Barz and Denzler, 2020); not corrected, as in the published numbers.
