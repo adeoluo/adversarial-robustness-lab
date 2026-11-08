@@ -125,7 +125,26 @@ pairs and slightly faster on APGD-DLR and the ensemble. The
 AutoAttack row compares our APGD-CE, APGD-T (9 targets) and Square (5,000 queries)
 sequence with the full torchattacks AutoAttack, which also runs FAB-T.
 
-SANITY_SECTION
+**Gradient-masking checks** (first 1,000 test images, L-infinity 8/255). The three
+adversarially trained models pass all eight checks. The same PGD-AT model behind 3-bit
+input quantization, a defense whose gradients are zero almost everywhere, looks robust
+to PGD and fails four checks; straight-through gradients (BPDA) then remove the apparent
+robustness.
+
+| Model | Checks passed | Failed checks | PGD-20 | PGD-20 with BPDA | Square-1000 |
+|---|---:|---|---:|---:|---:|
+| WRN-16-2 PGD-AT | 8 / 8 | none | 40.7% | n/a | 47.0% |
+| WRN-16-2 TRADES | 8 / 8 | none | 40.8% | n/a | 45.7% |
+| WRN-16-2 FGSM-RS | 8 / 8 | none | 40.4% | n/a | 47.4% |
+| PGD-AT + 3-bit quantization | 4 / 8 | black box beats white box, unbounded attack fails, all-zero gradients, transfer beats white box | 70.5% | **40.5%** | 43.8% |
+
+Quantization leaves clean accuracy at 71.4% (71.2% without it on these images), so the
+jump from 40.7% to 70.5% under PGD-20 is masking, not robustness; Square, which needs no
+gradients, already gets it down to 43.8%. FGSM-RS shows no catastrophic overfitting at this schedule (PGD-20 within 0.3 points of
+PGD-AT on these images). Per-check details: `make report` or the
+[evaluation report](docs/EVALUATION_REPORT.md#sanity-checks).
+
+ABLATION_SECTION
 
 ## Quickstart
 
