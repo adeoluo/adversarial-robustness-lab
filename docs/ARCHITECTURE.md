@@ -42,16 +42,11 @@ set. The README diagram shows the layers; this page follows the code paths.
 
 ## A certificate, step by step
 
-```mermaid
-flowchart LR
-    X[test image x] --> S0[n0 = 100 noisy copies]
-    S0 --> G[guess class A]
-    X --> S[n noisy copies]
-    S --> C[count of A]
-    C --> L[Clopper-Pearson lower bound pA at 1 - alpha]
-    L -->|pA > 1/2| R[radius sigma * PhiInv pA]
-    L -->|pA <= 1/2| ABS[abstain]
-```
+<p align="center">
+  <img src="architecture/certificate.svg" alt="A certificate, step by step diagram" width="360">
+</p>
+
+<sub>Legend: amber = entry points and external systems, indigo = core logic, green = data and state, blue = validation and control, grey = observability and outputs.</sub>
 
 Selection and estimation use separate samples, as in the paper, so the bound is valid
 for the selected class. The benchmark draws the estimation samples in nested blocks and
