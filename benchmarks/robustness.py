@@ -9,6 +9,7 @@ previous ones). Results go to ``benchmarks/results/robustness/<name>.json`` with
 per-sample outcomes in a sibling ``.npz`` (for bootstrap intervals and overlaps).
 
 The run is resumable: per-sample progress is saved to ``$ARL_DATA_DIR/runs/<name>.robustness.npz``
+(keyed by the settings and a SHA-256 prefix of the checkpoint, so new weights start afresh)
 after every batch, and the script exits with status 3 once ``--max-minutes`` have passed
 so that long evaluations run as a sequence of short steps. Rerun the same command to
 continue; the summary is written when every stage has covered every image.
@@ -32,7 +33,7 @@ from adversarial_robustness_lab.evaluation import check_threat_model
 from adversarial_robustness_lab.models import count_parameters
 from adversarial_robustness_lab.runtime import limit_memory, load_checkpoint, pick_device
 from adversarial_robustness_lab.stats import wilson_interval
-from common import RESULTS, RUNS, checkpoint, hardware, write_json
+from common import RESULTS, RUNS, checkpoint, fingerprint, hardware, write_json
 
 EPS = 8 / 255
 INCOMPLETE = 3
@@ -123,7 +124,10 @@ def main(argv: list[str] | None = None) -> int:
         else []
     )
     ens_names = [a.name for a in ens_attacks]
-    config = {k: getattr(args, k) for k in ("n", "ensemble", "targets", "queries")}
+    config: dict[str, object] = {
+        k: getattr(args, k) for k in ("n", "ensemble", "targets", "queries")
+    }
+    config["checkpoint"] = fingerprint(args.name)
     RUNS.mkdir(parents=True, exist_ok=True)
     state = State(str(RUNS / f"{args.name}.robustness.npz"), args.n, [*single, *ens_names], config)
     arr = state.arrays

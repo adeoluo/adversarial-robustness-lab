@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import contextlib
+import hashlib
 import json
 import os
 import platform
@@ -23,6 +24,15 @@ RUNS = DATA_DIR / "runs"
 
 def checkpoint(name: str) -> Path:
     return RUNS / f"{name}.pt"
+
+
+def fingerprint(*names: str) -> dict[str, str]:
+    """SHA-256 prefix of each checkpoint, so saved progress is never reused for other weights."""
+    out = {}
+    for name in names:
+        path = checkpoint(name)
+        out[name] = hashlib.sha256(path.read_bytes()).hexdigest()[:16] if path.exists() else ""
+    return out
 
 
 def hardware() -> dict[str, Any]:
