@@ -191,6 +191,33 @@
       "only_ours_breaks": 0,
       "only_torchattacks_breaks": 0,
       "both_robust": 0
+    },
+    {
+      "attack": "AutoAttack standard",
+      "norm": "linf",
+      "eps": 0.03137254901960784,
+      "n": 500,
+      "ours": {
+        "robust_accuracy": 0.0,
+        "ci95": [
+          0.0,
+          0.007624340461552236
+        ],
+        "seconds": 104.34065195899893,
+        "clean_accuracy": 0.898
+      },
+      "torchattacks": {
+        "robust_accuracy": 0.0,
+        "ci95": [
+          0.0,
+          0.007624340461552236
+        ],
+        "seconds": 16.422389540999575,
+        "clean_accuracy": 0.898
+      },
+      "only_ours_breaks": 0,
+      "only_torchattacks_breaks": 0,
+      "both_robust": 0
     }
   ],
   "hardware": {
