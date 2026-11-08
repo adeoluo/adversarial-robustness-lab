@@ -50,7 +50,57 @@ read the per-image outcomes. Module by module walkthrough: [docs/ARCHITECTURE.md
 
 ## Results
 
-RESULTS_PLACEHOLDER
+All numbers below are from runs on an Apple M1 (8 cores, 8 GB unified memory, PyTorch
+MPS backend, shared with other jobs), on CIFAR-10: 50,000 training images and the full
+10,000-image test set unless a table says otherwise. Every model is trained here with
+seed 0; intervals are 95% Wilson intervals over test images. Raw outputs are in
+[`benchmarks/results/`](benchmarks/results/), `make report` prints every table, and
+[docs/EVALUATION_REPORT.md](docs/EVALUATION_REPORT.md) has the full method and the
+threats to validity.
+
+**Clean and robust accuracy, L-infinity eps = 8/255, all 10,000 test images**
+
+| Model | Training | Parameters | Epochs | Training time | Clean | FGSM | PGD-20 | Ensemble (95% CI) |
+|---|---|---:|---:|---:|---:|---:|---:|---|
+| WRN-16-2 | standard | 0.69 M | 10 | 18 min | 88.7% | 4.4% | 0.0% | **0.0%** (0.0% to 0.0%) |
+| WRN-16-2 | PGD-AT (5 steps) | 0.69 M | 10 | 49 min | 70.7% | 43.0% | 39.1% | **35.5%** (34.6% to 36.4%) |
+| WRN-16-2 | TRADES (beta 6) | 0.69 M | 10 | 84 min | 70.5% | 42.6% | 39.8% | **35.4%** (34.5% to 36.4%) |
+
+The ensemble runs APGD-CE (100 steps), APGD-T (3 target classes) and Square (1,000
+queries) in turn on the images still correctly classified and reports the per-image worst
+case. On both robust models Square found no image the two white-box attacks had missed,
+and APGD-CE plus APGD-T is 3.6 to 4.4 points below PGD-20, which is the gap the ensemble
+exists to close. TRADES and PGD-AT end within 0.1 points of each other (overlapping
+intervals); TRADES took 1.7 times as long to train. For reference, the published TRADES
+WideResNet-34-10 (about 46 M parameters, 100 epochs) is listed at 53.1% under AutoAttack
+on RobustBench (Croce et al., 2021); that number was quoted, not rerun.
+
+| Model | Clean | After APGD-CE | After APGD-T | After Square | Time (APGD-CE / APGD-T / Square) |
+|---|---:|---:|---:|---:|---|
+| WRN-16-2 standard | 88.67% | 0.00% | 0.00% | 0.00% | 1794 s / 0 s / 0 s |
+| WRN-16-2 PGD-AT (5 steps) | 70.66% | 38.54% | 35.50% | 35.50% | 1852 s / 1199 s / 1168 s |
+| WRN-16-2 TRADES (beta 6) | 70.54% | 39.52% | 35.42% | 35.42% | 2760 s / 1746 s / 1788 s |
+
+**Certified L2 accuracy by randomized smoothing** (Cohen et al., 2019; n0 = 100,
+n = 10,000 Monte Carlo samples, alpha = 0.001, every 20th test image, 500 images; the
+Cohen et al. rows are quoted from their Table 3 (appendix E) for ResNet-110 with n = 100,000 on all
+10,000 images and were not rerun)
+
+| Base model | sigma | Images | n | r = 0.00 | r = 0.25 | r = 0.50 | r = 0.75 | r = 1.00 | Abstain |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| WRN-16-2, noise 0.25 | 0.25 | 500 | 10,000 | 71.4% | 56.2% | 38.2% | 18.2% | 0.0% | 9.6% |
+| WRN-16-2, noise 0.5 | 0.5 | 500 | 10,000 | 59.0% | 50.0% | 38.4% | 29.0% | 18.0% | 18.6% |
+| Cohen et al. ResNet-110 (cited) | 0.25 | 10,000 | 100,000 | 77% | 61% | 42% | 25% | 0% | n/a |
+| Cohen et al. ResNet-110 (cited) | 0.5 | 10,000 | 100,000 | 66% | 55% | 43% | 32% | 22% | n/a |
+
+The smoothed WideResNet-16-2 (0.69 M parameters, 10 epochs) is 3 to 7 points below the
+cited ResNet-110 (about 1.7 M parameters) at every radius in the table. With
+n = 10,000 the Clopper-Pearson bound caps the certifiable radius at about 0.80 for
+sigma 0.25 and 1.6 for sigma 0.50, so the zero at r = 1.00 (sigma 0.25) is a property of
+the sampling budget, not only of the model. The full curves at n = 100, 1,000 and 10,000
+are in the [evaluation report](docs/EVALUATION_REPORT.md#sampling-budget).
+
+COMPARE_SECTION
 
 ## Quickstart
 
