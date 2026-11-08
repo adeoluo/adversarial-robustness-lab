@@ -7,7 +7,7 @@
 <p align="center">
   <a href="https://github.com/adeoluo/adversarial-robustness-lab/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/adeoluo/adversarial-robustness-lab/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://github.com/adeoluo/adversarial-robustness-lab/releases"><img alt="Release" src="https://img.shields.io/github/v/release/adeoluo/adversarial-robustness-lab"></a>
-  <img alt="Python" src="https://img.shields.io/badge/python-3.11%20%7C%203.12-blue">
+  <img alt="Python" src="https://img.shields.io/badge/python-3.12%20%7C%203.13%20%7C%203.14%20%7C%203.15-blue">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-green"></a>
 </p>
 
@@ -305,7 +305,7 @@ make validation     # the parity group alone: torchattacks, SciPy, statsmodels
 - **Integration**: every CLI command and HTTP route on a synthetic split, including
   malformed and oversized requests.
 
-CI runs lint, mypy, the tests with the coverage gate on Python 3.11 and 3.12, and builds
+CI runs lint, mypy, the tests with the coverage gate on Python 3.12, 3.13, 3.14 and 3.15, and builds
 the package and the Docker image; CodeQL runs on main and weekly.
 
 ## Responsible AI
