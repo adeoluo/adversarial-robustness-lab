@@ -48,6 +48,7 @@ Printed by `make report` from `benchmarks/results/`.
 |---|---|---:|---:|---:|---:|---:|---:|---|
 | Small CNN | standard | 0.59 M | 20 | 8 min | 85.8% | 3.9% | 0.0% | **0.0%** (0.0% to 0.0%) |
 | WRN-16-2 | standard | 0.69 M | 10 | 18 min | 88.7% | 4.4% | 0.0% | **0.0%** (0.0% to 0.0%) |
+| PreAct ResNet-18 | standard | 11.17 M | 10 | 70 min | 91.2% | 5.2% | 0.0% | **0.0%** (0.0% to 0.0%) |
 | WRN-16-2 | FGSM-RS (fast AT) | 0.69 M | 10 | 20 min | 72.7% | 44.4% | 39.7% | **36.0%** (35.1% to 37.0%) |
 | WRN-16-2 | PGD-AT (5 steps) | 0.69 M | 10 | 49 min | 70.7% | 43.0% | 39.1% | **35.5%** (34.6% to 36.4%) |
 | WRN-16-2 | TRADES (beta 6) | 0.69 M | 10 | 84 min | 70.5% | 42.6% | 39.8% | **35.4%** (34.5% to 36.4%) |
@@ -58,6 +59,7 @@ Printed by `make report` from `benchmarks/results/`.
 |---|---:|---:|---:|---:|---|
 | Small CNN standard | 85.81% | 0.00% | 0.00% | 0.00% | 744 s / 0 s / 0 s |
 | WRN-16-2 standard | 88.67% | 0.00% | 0.00% | 0.00% | 1794 s / 0 s / 0 s |
+| PreAct ResNet-18 standard | 91.18% | 0.00% | 0.00% | 0.00% | 4263 s / 0 s / 0 s |
 | WRN-16-2 FGSM-RS (fast AT) | 72.73% | 39.11% | 36.04% | 36.04% | 1150 s / 2006 s / 2147 s |
 | WRN-16-2 PGD-AT (5 steps) | 70.66% | 38.54% | 35.50% | 35.50% | 1852 s / 1199 s / 1168 s |
 | WRN-16-2 TRADES (beta 6) | 70.54% | 39.52% | 35.42% | 35.42% | 2760 s / 1746 s / 1788 s |
@@ -68,6 +70,7 @@ Printed by `make report` from `benchmarks/results/`.
 |---|---:|---:|
 | Small CNN standard | 0.0% | 0.0% |
 | WRN-16-2 standard | 0.0% | 0.0% |
+| PreAct ResNet-18 standard | 0.0% | 0.0% |
 | WRN-16-2 FGSM-RS (fast AT) | 39.7% | 38.3% |
 | WRN-16-2 PGD-AT (5 steps) | 39.1% | 37.3% |
 | WRN-16-2 TRADES (beta 6) | 39.8% | 36.1% |
@@ -167,8 +170,10 @@ median queries to success: 176.0
 
 - **Adversarial training works at this scale, and the method matters less than the
   budget.** FGSM-RS, PGD-AT and TRADES reach 36.0%, 35.5% and 35.4% ensemble robust
-  accuracy on all 10,000 test images; the standard model (88.7% clean) and the small
-  CNN (85.8% clean) are at 0.0% under the ensemble. On the paired per-image
+  accuracy on all 10,000 test images. The three standard models are at 0.0% under
+  the ensemble whatever their size: the small CNN (0.59 M parameters, 85.8% clean),
+  WideResNet-16-2 (0.69 M, 88.7%) and PreAct ResNet-18 (11.17 M, 91.2%). On the paired
+  per-image
   outcomes none of the robust accuracy differences is significant (sign test p = 0.056
   for FGSM-RS against PGD-AT, 0.059 against TRADES, 0.83 for PGD-AT against TRADES);
   FGSM-RS keeps 2.1 points more clean accuracy than PGD-AT (72.7% against 70.7%,
@@ -223,8 +228,8 @@ median queries to success: 176.0
 - **Resumed runs.** Long steps save per-image progress and resume. Progress is keyed on
   the settings and a SHA-256 prefix of every checkpoint used; an earlier version keyed
   on the settings only, and one evaluation (PreAct ResNet-18, never committed) resumed
-  from predictions of an older checkpoint. After the fix, the clean predictions in every
-  committed robustness file were checked against a fresh CPU pass over all 10,000 test
-  images: they agree image for image.
+  from predictions of an older checkpoint; it was rerun from scratch after the fix. The
+  clean predictions in every committed robustness file were checked against a fresh CPU
+  pass over all 10,000 test images: they agree image for image.
 - **Test-set near-duplicates.** CIFAR-10 has near-duplicates between train and test
   (Barz and Denzler, 2020); not corrected, as in the published numbers.

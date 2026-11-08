@@ -1,0 +1,86 @@
+{
+  "name": "rn18_standard",
+  "arch": "preact_resnet18",
+  "method": "standard",
+  "parameters": 11172170,
+  "epochs": 10,
+  "train_seconds": 4180.409236372994,
+  "eps": 0.03137254901960784,
+  "n": 10000,
+  "clean_accuracy": 0.9118,
+  "clean_ci95": [
+    0.9060825128469575,
+    0.9172012260949532
+  ],
+  "attacks": [
+    {
+      "attack": "fgsm",
+      "robust_accuracy": 0.0523,
+      "ci95": [
+        0.04810587403933279,
+        0.05683795810177102
+      ],
+      "n": 10000,
+      "seconds": 74.92667621300643,
+      "max_linf": 0.03137257695198059
+    },
+    {
+      "attack": "pgd20",
+      "robust_accuracy": 0.0,
+      "ci95": [
+        0.0,
+        0.00038399837067659546
+      ],
+      "n": 10000,
+      "seconds": 1355.4228015859699,
+      "max_linf": 0.03137257695198059
+    },
+    {
+      "attack": "cw_pgd20",
+      "robust_accuracy": 0.0,
+      "ci95": [
+        0.0,
+        0.00038399837067659546
+      ],
+      "n": 10000,
+      "seconds": 921.3462635499818,
+      "max_linf": 0.03137257695198059
+    }
+  ],
+  "hardware": {
+    "chip": "Apple M1",
+    "cpus": 8,
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
+    "torch": "2.15.0",
+    "python": "3.12.14"
+  },
+  "device": "mps",
+  "ensemble": {
+    "attacks": [
+      "apgd-ce",
+      "apgd-t",
+      "square"
+    ],
+    "targets": 3,
+    "square_queries": 1000,
+    "robust_after": {
+      "clean": 9118,
+      "apgd-ce": 0,
+      "apgd-t": 0,
+      "square": 0
+    },
+    "attack": "ensemble",
+    "robust_accuracy": 0.0,
+    "ci95": [
+      0.0,
+      0.00038399837067659546
+    ],
+    "n": 10000,
+    "seconds": 4262.962337503042,
+    "stage_seconds": {
+      "apgd-ce": 4262.962337503042,
+      "apgd-t": 0.0,
+      "square": 0.0
+    }
+  }
+}
