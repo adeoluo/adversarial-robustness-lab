@@ -34,6 +34,7 @@ sort_commits = "oldest"
 commit_parsers = [
   { message = "^chore\\(release\\)", skip = true },
   { message = "^feat", group = "<!-- 0 -->Features" },
+  { message = "^bench", group = "<!-- 1 -->Benchmarks" },
   { message = "^fix", group = "<!-- 1 -->Bug fixes" },
   { message = "^perf", group = "<!-- 2 -->Performance" },
   { message = "^refactor", group = "<!-- 3 -->Refactoring" },
