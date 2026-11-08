@@ -31,6 +31,34 @@ attack found; the ensemble reports the worst case over its attacks per image.
   and backdoors (training-time attacks), model extraction, membership inference, and
   attacks on the HTTP service itself beyond input validation.
 
+## Mapping to standards
+
+Technique and mitigation IDs are from MITRE ATLAS v2026.10 (`ATLAS-2026.10.yaml` in the
+mitre-atlas/atlas-data release of 2026-10-28); risk IDs from the OWASP Machine Learning
+Security Top 10 (2023, the current edition) and the attack classes of NIST AI 100-2
+E2025 (Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and
+Mitigations).
+
+| What this repository does | MITRE ATLAS v2026.10 | OWASP | NIST AI 100-2 E2025 |
+|---|---|---|---|
+| FGSM, PGD (L-infinity, L2), C&W, APGD-CE, APGD-DLR, APGD-T with the weights | AML.T0043.000 Craft Adversarial Data: White-Box Optimization, given AML.T0044 Full AI Model Access; goal AML.T0015 Evade AI Model | ML01:2023 Input Manipulation Attack | Evasion, white box |
+| Square with output scores only | AML.T0043.001 Black-Box Optimization through AML.T0040 AI Model Inference API Access | ML01:2023 | Evasion, black box (score based) |
+| Transfer check: PGD on the standard model as a surrogate, scored on the robust model | AML.T0043.002 Black-Box Transfer | ML01:2023 | Evasion, transfer |
+| BPDA through 3-bit input quantization (adaptive attack) | AML.T0043.000 against the mitigation AML.M0010 Predictive AI Input Restoration | ML01:2023 | Evasion, adaptive attack on a preprocessing defense |
+| Robust accuracy under the ensemble, comparison with torchattacks, gradient-masking checks | AML.M0008 Validate AI Model (measures what AML.T0042 Verify Attack would find) | ML01:2023 (testing the prevention) | Evaluation of mitigations |
+| PGD-AT, TRADES, FGSM-RS adversarial training; randomized smoothing certificates | AML.M0003 Predictive AI Model Hardening | ML01:2023 prevention: adversarial training, robust models | Mitigations for evasion: adversarial training, certified defenses |
+| Checkpoints loaded with `weights_only=True`, pickled code refused | AML.T0011.000 User Execution: Unsafe AI Artifacts and AML.T0010.003 Supply Chain Compromise: Model Repository; partial AML.M0014 Verify AI Artifacts (no signature or hash check) | ML06:2023 AI Supply Chain Attacks | Supply chain attacks on model files |
+| Per-request bounds on steps, queries, samples and body size in the HTTP service | AML.T0029 Denial of AI Service and AML.T0034.001 Cost Harvesting: Resource-Intensive Queries; partial AML.M0004 Limit AI Service Query Volume and Rate (work per request is bounded, request rate is not) | n/a in the ML Top 10 | Availability |
+
+Out of scope, with their IDs for reference: training data poisoning and backdoors
+(AML.T0020 Training Data Poisoning, AML.T0043.004 Insert Backdoor Trigger, OWASP ML02:2023
+and ML10:2023), model theft and replication (AML.T0005, AML.T0024 Exfiltration via AI
+Inference API, ML05:2023), and model inversion and membership inference (ML03:2023,
+ML04:2023). The OWASP Top 10 for LLM Applications 2026 and the OWASP Top 10 for Agentic
+Applications 2026 address LLM and agent applications and do not apply to an image
+classifier; the nearest LLM entries are LLM04:2026 Supply Chain for the checkpoint
+loading and LLM06:2026 Unbounded Consumption for the service bounds.
+
 ## Service hardening
 
 The HTTP service runs attacks and certification for a client, so it bounds the work
