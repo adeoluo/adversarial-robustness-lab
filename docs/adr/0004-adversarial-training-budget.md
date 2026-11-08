@@ -23,7 +23,9 @@ training throughput with plain PyTorch on MPS under that load: PreAct ResNet-18
   cyclic schedules are what made fast adversarial training practical (Wong et al.);
   with 10 epochs, robust overfitting (Rice et al., 2020) is not a concern.
 - Train PreAct ResNet-18 and a small CNN with standard training to show the effect of
-  model size on clean accuracy and on (lack of) robustness.
+  model size on clean accuracy and on (lack of) robustness. Outcome: the PreAct
+  ResNet-18 run ran out of memory under the MPS cap during epoch 4 and was dropped; the
+  small CNN and the standard WideResNet-16-2 cover the comparison.
 - Keep the 50,000 training images on the device as uint8 (154 MB instead of 614 MB as
   float32) and augment on the device; cap the MPS allocator with
   `torch.mps.set_per_process_memory_fraction`.

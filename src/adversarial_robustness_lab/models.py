@@ -134,7 +134,7 @@ class WideResNet(nn.Module):
 
 
 class SmallCNN(nn.Module):
-    """A four-convolution network (about 0.3 M parameters) for tests and demos."""
+    """A four-convolution network (about 0.6 M parameters at the default width)."""
 
     def __init__(self, num_classes: int = 10, width: int = 32) -> None:
         super().__init__()
