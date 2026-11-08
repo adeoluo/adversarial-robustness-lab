@@ -1,0 +1,232 @@
+{
+  "name": "wrn16_2_pgd",
+  "arch": "wrn_16_2",
+  "method": "pgd",
+  "rows": [
+    {
+      "attack": "FGSM",
+      "norm": "linf",
+      "eps": 0.03137254901960784,
+      "n": 10000,
+      "ours": {
+        "robust_accuracy": 0.4302,
+        "ci95": [
+          0.4205247695029098,
+          0.4399288366696366
+        ],
+        "seconds": 20.202339999999822,
+        "clean_accuracy": 0.7066
+      },
+      "torchattacks": {
+        "robust_accuracy": 0.4302,
+        "ci95": [
+          0.4205247695029098,
+          0.4399288366696366
+        ],
+        "seconds": 14.769396249999772,
+        "clean_accuracy": 0.7066
+      },
+      "only_ours_breaks": 0,
+      "only_torchattacks_breaks": 0,
+      "both_robust": 4302
+    },
+    {
+      "attack": "PGD-20",
+      "norm": "linf",
+      "eps": 0.03137254901960784,
+      "n": 10000,
+      "ours": {
+        "robust_accuracy": 0.3911,
+        "ci95": [
+          0.3815790027716144,
+          0.4007046320735189
+        ],
+        "seconds": 152.79920941599994,
+        "clean_accuracy": 0.7066
+      },
+      "torchattacks": {
+        "robust_accuracy": 0.3905,
+        "ci95": [
+          0.3809818635020038,
+          0.40010223214117435
+        ],
+        "seconds": 141.22600679199968,
+        "clean_accuracy": 0.7066
+      },
+      "only_ours_breaks": 13,
+      "only_torchattacks_breaks": 19,
+      "both_robust": 3892
+    },
+    {
+      "attack": "PGD-L2-20",
+      "norm": "l2",
+      "eps": 0.5,
+      "n": 10000,
+      "ours": {
+        "robust_accuracy": 0.5324,
+        "ci95": [
+          0.5226102049595566,
+          0.5421649119460236
+        ],
+        "seconds": 192.40684166700066,
+        "clean_accuracy": 0.7066
+      },
+      "torchattacks": {
+        "robust_accuracy": 0.5301,
+        "ci95": [
+          0.5203082668090508,
+          0.5398686164890345
+        ],
+        "seconds": 173.6767463340002,
+        "clean_accuracy": 0.7066
+      },
+      "only_ours_breaks": 1,
+      "only_torchattacks_breaks": 24,
+      "both_robust": 5300
+    },
+    {
+      "attack": "C&W-L2 (c=1, 100 steps)",
+      "norm": "l2",
+      "eps": 0.5,
+      "n": 1000,
+      "ours": {
+        "robust_accuracy": 0.519,
+        "ci95": [
+          0.48801914625314236,
+          0.5498354369244066
+        ],
+        "seconds": 128.28828645799967,
+        "clean_accuracy": 0.712
+      },
+      "torchattacks": {
+        "robust_accuracy": 0.519,
+        "ci95": [
+          0.48801914625314236,
+          0.5498354369244066
+        ],
+        "seconds": 113.08939787500003,
+        "clean_accuracy": 0.712
+      },
+      "only_ours_breaks": 0,
+      "only_torchattacks_breaks": 0,
+      "both_robust": 519
+    },
+    {
+      "attack": "APGD-CE-100",
+      "norm": "linf",
+      "eps": 0.03137254901960784,
+      "n": 1000,
+      "ours": {
+        "robust_accuracy": 0.402,
+        "ci95": [
+          0.3720422335603109,
+          0.4327078111028579
+        ],
+        "seconds": 86.06703941700016,
+        "clean_accuracy": 0.712
+      },
+      "torchattacks": {
+        "robust_accuracy": 0.402,
+        "ci95": [
+          0.3720422335603109,
+          0.4327078111028579
+        ],
+        "seconds": 72.93041399999947,
+        "clean_accuracy": 0.712
+      },
+      "only_ours_breaks": 0,
+      "only_torchattacks_breaks": 0,
+      "both_robust": 402
+    },
+    {
+      "attack": "APGD-DLR-100",
+      "norm": "linf",
+      "eps": 0.03137254901960784,
+      "n": 1000,
+      "ours": {
+        "robust_accuracy": 0.393,
+        "ci95": [
+          0.36319283324054996,
+          0.4236260930753588
+        ],
+        "seconds": 100.97614891600006,
+        "clean_accuracy": 0.712
+      },
+      "torchattacks": {
+        "robust_accuracy": 0.393,
+        "ci95": [
+          0.36319283324054996,
+          0.4236260930753588
+        ],
+        "seconds": 106.83688783300022,
+        "clean_accuracy": 0.712
+      },
+      "only_ours_breaks": 0,
+      "only_torchattacks_breaks": 0,
+      "both_robust": 393
+    },
+    {
+      "attack": "Square-1000",
+      "norm": "linf",
+      "eps": 0.03137254901960784,
+      "n": 1000,
+      "ours": {
+        "robust_accuracy": 0.47,
+        "ci95": [
+          0.43923991460215,
+          0.5009896909069833
+        ],
+        "seconds": 420.3733519999996,
+        "clean_accuracy": 0.712
+      },
+      "torchattacks": {
+        "robust_accuracy": 0.467,
+        "ci95": [
+          0.4362630649735458,
+          0.4979895010865009
+        ],
+        "seconds": 367.47151462500096,
+        "clean_accuracy": 0.712
+      },
+      "only_ours_breaks": 3,
+      "only_torchattacks_breaks": 6,
+      "both_robust": 464
+    },
+    {
+      "attack": "AutoAttack standard",
+      "norm": "linf",
+      "eps": 0.03137254901960784,
+      "n": 500,
+      "ours": {
+        "robust_accuracy": 0.368,
+        "ci95": [
+          0.32688454837875686,
+          0.41112827750309305
+        ],
+        "seconds": 1019.1293287919998,
+        "clean_accuracy": 0.712
+      },
+      "torchattacks": {
+        "robust_accuracy": 0.368,
+        "ci95": [
+          0.32688454837875686,
+          0.41112827750309305
+        ],
+        "seconds": 1038.900279708001,
+        "clean_accuracy": 0.712
+      },
+      "only_ours_breaks": 0,
+      "only_torchattacks_breaks": 0,
+      "both_robust": 184
+    }
+  ],
+  "hardware": {
+    "chip": "Apple M1",
+    "cpus": 8,
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
+    "torch": "2.15.0",
+    "python": "3.12.14"
+  },
+  "device": "mps",
+  "torchattacks": "3.5.1"
+}
