@@ -15,9 +15,20 @@ RESULTS = Path(__file__).resolve().parent / "results"
 ZOO = [
     ("small_cnn_standard", "Small CNN", "standard"),
     ("wrn16_2_standard", "WRN-16-2", "standard"),
+    ("rn18_standard", "PreAct ResNet-18", "standard"),
     ("wrn16_2_fgsm_rs", "WRN-16-2", "FGSM-RS (fast AT)"),
     ("wrn16_2_pgd", "WRN-16-2", "PGD-AT (5 steps)"),
     ("wrn16_2_trades", "WRN-16-2", "TRADES (beta 6)"),
+]
+PAIRS = [
+    "FGSM",
+    "PGD-20",
+    "PGD-L2-20",
+    "C&W-L2 (c=1, 100 steps)",
+    "APGD-CE-100",
+    "APGD-DLR-100",
+    "Square-1000",
+    "AutoAttack standard",
 ]
 COHEN = {
     0.25: {"0.00": 0.77, "0.25": 0.61, "0.50": 0.42, "0.75": 0.25, "1.00": 0.00},
@@ -116,7 +127,8 @@ def comparison() -> None:
             "| Attack | Images | Ours: robust acc | torchattacks: robust acc | Broken only by ours / only by torchattacks | Verdict | Time ours / torchattacks |"
         )
         print("|---|---:|---:|---:|---:|---|---:|")
-        for row in res["rows"]:
+        rows = sorted(res["rows"], key=lambda r: PAIRS.index(r["attack"]))
+        for row in rows:
             o, t = row["ours"], row["torchattacks"]
             print(
                 f"| {row['attack']} | {row['n']:,} | {pct(o['robust_accuracy'], 2)} | "

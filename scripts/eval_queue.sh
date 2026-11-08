@@ -38,6 +38,14 @@ step sanity.py
 step ablations.py
 step robustness.py wrn16_2_fgsm_rs
 step robustness.py small_cnn_standard
-for pair in "FGSM" "PGD-20" "PGD-L2-20" "C&W-L2 (c=1, 100 steps)" "APGD-CE-100" "Square-1000"; do
+for pair in "FGSM" "PGD-20" "PGD-L2-20" "C&W-L2 (c=1, 100 steps)" "Square-1000"; do
   step compare_torchattacks.py wrn16_2_standard --only "$pair"
 done
+# torchattacks' APGD on the standard model ran out of MPS memory at 250 images per batch.
+for pair in "APGD-CE-100" "APGD-DLR-100"; do
+  step compare_torchattacks.py wrn16_2_standard --only "$pair" --batch-size 100
+done
+step compare_torchattacks.py wrn16_2_standard --only "AutoAttack standard" --batch-size 50
+step train_zoo.py rn18_standard --resume --stop-after 4
+# PreAct ResNet-18 has 16 times the parameters of WRN-16-2; 100 images per batch fit the cap.
+step robustness.py rn18_standard --batch-size 100
