@@ -65,6 +65,7 @@ threats to validity.
 |---|---|---:|---:|---:|---:|---:|---:|---|
 | Small CNN | standard | 0.59 M | 20 | 8 min | 85.8% | 3.9% | 0.0% | **0.0%** (0.0% to 0.0%) |
 | WRN-16-2 | standard | 0.69 M | 10 | 18 min | 88.7% | 4.4% | 0.0% | **0.0%** (0.0% to 0.0%) |
+| PreAct ResNet-18 | standard | 11.17 M | 10 | 70 min | 91.2% | 5.2% | 0.0% | **0.0%** (0.0% to 0.0%) |
 | WRN-16-2 | FGSM-RS (fast AT) | 0.69 M | 10 | 20 min | 72.7% | 44.4% | 39.7% | **36.0%** (35.1% to 37.0%) |
 | WRN-16-2 | PGD-AT (5 steps) | 0.69 M | 10 | 49 min | 70.7% | 43.0% | 39.1% | **35.5%** (34.6% to 36.4%) |
 | WRN-16-2 | TRADES (beta 6) | 0.69 M | 10 | 84 min | 70.5% | 42.6% | 39.8% | **35.4%** (34.5% to 36.4%) |
@@ -79,6 +80,9 @@ points more clean accuracy than PGD-AT (49 minutes), a significant difference on
 paired per-image outcomes (sign test p < 0.001); its robust accuracy lead is not
 significant (p = 0.056 against PGD-AT, 0.059 against TRADES), and neither is the gap
 between PGD-AT and TRADES (p = 0.83), which took 84 minutes. One training seed per model.
+Model size buys clean accuracy, not robustness: with standard training the small CNN,
+WideResNet-16-2 and PreAct ResNet-18 (0.59 M, 0.69 M and 11.17 M parameters) reach
+85.8%, 88.7% and 91.2% clean and all fall to 0.0% under PGD-20 and the ensemble.
 For reference, the published TRADES WideResNet-34-10 (about 46 M parameters, 100
 epochs) is listed at 53.1% under AutoAttack on RobustBench (Croce et al., 2021); that
 number was quoted, not rerun.
@@ -87,6 +91,7 @@ number was quoted, not rerun.
 |---|---:|---:|---:|---:|---|
 | Small CNN standard | 85.81% | 0.00% | 0.00% | 0.00% | 744 s / 0 s / 0 s |
 | WRN-16-2 standard | 88.67% | 0.00% | 0.00% | 0.00% | 1794 s / 0 s / 0 s |
+| PreAct ResNet-18 standard | 91.18% | 0.00% | 0.00% | 0.00% | 4263 s / 0 s / 0 s |
 | WRN-16-2 FGSM-RS (fast AT) | 72.73% | 39.11% | 36.04% | 36.04% | 1150 s / 2006 s / 2147 s |
 | WRN-16-2 PGD-AT (5 steps) | 70.66% | 38.54% | 35.50% | 35.50% | 1852 s / 1199 s / 1168 s |
 | WRN-16-2 TRADES (beta 6) | 70.54% | 39.52% | 35.42% | 35.42% | 2760 s / 1746 s / 1788 s |
