@@ -2,7 +2,7 @@
 
 ## Overview
 
-Eight image classifiers trained from scratch in this repository on the 50,000 CIFAR-10
+Seven image classifiers trained from scratch in this repository on the 50,000 CIFAR-10
 training images, to be attacked, defended and certified by the code here. They are
 evaluation subjects, not products.
 
@@ -15,12 +15,14 @@ evaluation subjects, not products.
 | `wrn16_2_trades` | WideResNet-16-2 | 691,674 | TRADES (Zhang et al., 2019), beta 6, 5 steps | 10 | 84.1 min |
 | `wrn16_2_noise025` | WideResNet-16-2 | 691,674 | Gaussian noise, sigma 0.25 (base model for smoothing) | 10 | 17.0 min |
 | `wrn16_2_noise050` | WideResNet-16-2 | 691,674 | Gaussian noise, sigma 0.50 (base model for smoothing) | 10 | 24.8 min |
-| `rn18_standard` | PreAct ResNet-18 | 11,172,170 | standard | 10 | see `benchmarks/results/train/` |
 
 All use SGD with Nesterov momentum 0.9, weight decay 5e-4, batch size 128, a one-cycle
 learning rate schedule, random crop and horizontal flip, seed 0. Inputs are pixels in
 [0, 1]; per-channel standardization is the first layer of each network. Configurations
 and per-epoch histories: `benchmarks/train_zoo.py`, `benchmarks/results/train/*.json`.
+A PreAct ResNet-18 (11.2 M parameters, standard training) was also configured; its run
+ran out of MPS memory under the 1.92 GiB cap during epoch 4 (64.3% clean after epoch 3,
+about 7.3 minutes per epoch), so it is not part of the results.
 Checkpoints are written to `../.bench-data/adversarial-robustness-lab/runs/` and are
 not committed; `make train-all` recreates them.
 
@@ -39,9 +41,21 @@ not committed; `make train-all` recreates them.
 
 ## Performance
 
-Clean and robust accuracy on the full 10,000-image test set, with 95% Wilson intervals,
-are in the README and [EVALUATION_REPORT.md](EVALUATION_REPORT.md); certified accuracy
-of the smoothed noise models is in the same places.
+Full 10,000-image test set, L-infinity eps = 8/255, 95% Wilson intervals in the README
+and [EVALUATION_REPORT.md](EVALUATION_REPORT.md):
+
+<!-- PERF -->
+| Model | Clean | FGSM | PGD-20 | Ensemble (APGD-CE, APGD-T, Square) |
+|---|---:|---:|---:|---:|
+| `wrn16_2_standard` | 88.7% | 4.4% | 0.0% | 0.0% |
+| `wrn16_2_pgd` | 70.7% | 43.0% | 39.1% | 35.5% |
+| `wrn16_2_trades` | 70.5% | 42.6% | 39.8% | 35.4% |
+<!-- /PERF -->
+
+Smoothed classifiers (500 test images, n = 10,000, alpha = 0.001), certified L2
+accuracy at radius 0 / 0.25 / 0.5 / 0.75 / 1.0: `wrn16_2_noise025` at sigma 0.25:
+71.4% / 56.2% / 38.2% / 18.2% / 0.0%; `wrn16_2_noise050` at sigma 0.5: 59.0% / 50.0% /
+38.4% / 29.0% / 18.0%.
 
 ## Risks and limitations
 
@@ -55,5 +69,5 @@ of the smoothed noise models is in the same places.
 
 ## Footprint
 
-Training the whole zoo took about 4.5 hours on an Apple M1 (8 GB) with the MPS backend,
+Training the seven models took 3.7 hours on an Apple M1 (8 GB) with the MPS backend,
 shared with other work; evaluation times are recorded in each results file.
