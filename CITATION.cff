@@ -1,10 +1,24 @@
 cff-version: 1.2.0
-message: "If you use this work, please cite it."
+message: "If you use this software, please cite it as below."
+type: software
 title: "Adversarial Robustness Lab"
+abstract: "Evasion attacks (FGSM, PGD, C&W, APGD, Square, AutoAttack-style ensemble), adversarial training (PGD-AT, TRADES, FGSM-RS) and randomized smoothing certification on the full CIFAR-10 test set, checked against torchattacks 3.5.1 and mapped to MITRE ATLAS v2026.10"
 authors:
   - family-names: "Ogunnoiki"
     given-names: "Adeolu"
-version: 0.1.0
-date-released: 2026-01-01
+version: "0.1.0"
+date-released: "2026-11-08"
 license: MIT
-url: "REPO_URL"
+repository-code: "https://github.com/adeoluo/adversarial-robustness-lab"
+url: "https://github.com/adeoluo/adversarial-robustness-lab"
+keywords:
+  - "adversarial-attacks"
+  - "adversarial-robustness"
+  - "adversarial-training"
+  - "ai-security"
+  - "certified-robustness"
+  - "cifar10"
+  - "pytorch"
+  - "randomized-smoothing"
+  - "autoattack"
+  - "mitre-atlas"
