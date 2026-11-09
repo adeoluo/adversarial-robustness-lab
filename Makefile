@@ -55,10 +55,10 @@ report: ## Print the README tables from benchmarks/results
 run: ## Run the HTTP service (CHECKPOINT=path)
 	uv run python -m adversarial_robustness_lab serve --checkpoint $(CHECKPOINT)
 
-diagram: ## Render the architecture diagram to SVG
-	npx -y @mermaid-js/mermaid-cli -i docs/architecture/architecture.mmd \
-	     -o docs/architecture/architecture.svg \
-	     -c mermaid.config.json -b transparent
+diagram: ## Render every diagram in docs/architecture to SVG (house theme, white background)
+	@for f in docs/architecture/*.mmd; do \
+		npx -y @mermaid-js/mermaid-cli -q -i "$$f" -o "$${f%.mmd}.svg" -c mermaid.config.json -b white || exit 1; \
+	done
 
 docker-build: ## Build the image
 	docker build -t adversarial-robustness-lab .
